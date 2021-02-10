@@ -22,8 +22,6 @@ RUN apk update && \
     rm -rf /usr/local/bundle/cache/* \
     /usr/local/share/.cache/* \
     /var/cache/* \
-    /tmp/* \
-    /usr/lib/mysqld* \
-    /usr/bin/mysql*
+    /tmp/* 
 
 ADD . ${HOME}
