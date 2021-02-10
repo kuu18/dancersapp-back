@@ -14,11 +14,13 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
-  back:
+  app:
     build:
       context: .
       args:
         WORKDIR: $WORKDIR
+    environment:
+      API_DOMAIN: "localhost:$FRONT_PORT"
     env_file:
       - ./environments/db.env
     volumes:
