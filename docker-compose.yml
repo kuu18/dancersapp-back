@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      TZ: Asia/Tokyo
+    env_file:
+      - ./environments/db.env
+    restart: always
+    ports:
+      - '3306:3306'
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  back:
+    build:
+      context: .
+      args:
+        WORKDIR: $WORKDIR
+    env_file:
+      - ./environments/db.env
+    volumes:
+      - .:/$WORKDIR:cached
+      - bundle_data:/usr/local/bundle:cached
+    depends_on:
+      - db
+    ports:
+      - "$API_PORT:$CONTAINER_PORT"
+
+volumes: 
+  mysql-data:
+  bundle_data:
