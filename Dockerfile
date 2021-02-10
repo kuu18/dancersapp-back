@@ -27,6 +27,3 @@ RUN apk update && \
     /usr/bin/mysql*
 
 ADD . ${HOME}
-
-
-CMD [ "rails", "server",  "-b", "0.0.0.0" ]
