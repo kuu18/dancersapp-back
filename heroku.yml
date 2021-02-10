@@ -4,11 +4,11 @@ setup:
     RAILS_ENV: production
     RAILS_LOG_TO_STDOUT: enabled
     RAILS_SERVE_STATIC_FILES: enabled4
-  build:
-    docker:
-      web: Dockerfile
-    config:
-      WORKDIR: app
-  run:
-    web: bundle exec puma -C config/puma.rb
+build:
+  docker:
+    web: Dockerfile
+  config:
+    WORKDIR: app
+run:
+  web: bundle exec puma -C config/puma.rb
     
