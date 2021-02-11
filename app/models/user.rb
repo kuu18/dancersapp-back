@@ -1,4 +1,4 @@
-require "validator/email_validator"
+require 'validator/email_validator'
 class User < ApplicationRecord
   before_validation :downcase_email
   validates :name, presence: true,
@@ -6,7 +6,7 @@ class User < ApplicationRecord
   validates :email, presence: true,
                     email: { allow_blank: true },
                     uniqueness: { case_sensitive: false }
-  VALID_PASSWORD_REGEX = /\A[\w\-]+\z/
+  VALID_PASSWORD_REGEX = /\A[\w\-]+\z/.freeze
   validates :password, presence: true,
                        length: { minimum: 8 },
                        format: {
@@ -17,7 +17,8 @@ class User < ApplicationRecord
   has_secure_password
 
   private
-    def downcase_email
-      self.email.downcase! if email
-    end
+
+  def downcase_email
+    email&.downcase!
+  end
 end

@@ -1,4 +1,4 @@
-if defined? Rails::Console
+if defined? Rails::Console && defined? Hirb
   # Hirb.enableの有効化
-  Hirb.enable if defined? Hirb
+  Hirb.enable
 end

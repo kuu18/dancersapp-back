@@ -33,3 +33,5 @@
 
 /.local
 /.local/*
+
+/.cache/*
