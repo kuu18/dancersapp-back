@@ -13,12 +13,12 @@ class User < ApplicationRecord
                          with: VALID_PASSWORD_REGEX,
                          message: :invalid_password
                        },
-                       allow_blank: true
+                       allow_nil: true
   has_secure_password
 
   private
 
   def downcase_email
-    email&.downcase!
+    self.email = email.downcase if email.present?
   end
 end
