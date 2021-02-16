@@ -4,12 +4,11 @@ module UserAuth
   class AuthToken
     # 追加
     attr_reader :token
-    attr_reader :payload
-    attr_reader :lifetime
+    attr_reader :payload, :lifetime
 
     def initialize(lifetime: nil, payload: {}, token: nil, options: {})
       if token.present?
-        @payload, _ = JWT.decode(token.to_s, decode_key, true, decode_options.merge(options))
+        @payload, = JWT.decode(token.to_s, decode_key, true, decode_options.merge(options))
         @token = token
       else
         @lifetime = lifetime || UserAuth.token_lifetime
@@ -20,65 +19,66 @@ module UserAuth
 
     # subjectからユーザーを検索する
     def entity_for_user
-      User.find @payload["sub"]
+      User.find @payload['sub']
     end
 
     # token_lifetimeの日本語変換を返す
     def lifetime_text
-      time, period = @lifetime.inspect.sub(/s\z/,"").split
-      time + I18n.t("datetime.periods.#{period}", default: "")
+      time, period = @lifetime.inspect.sub(/s\z/, '').split
+      time + I18n.t("datetime.periods.#{period}", default: '')
     end
 
     private
 
-      # エンコードキー(config/initializers/user_auth.rb)
-      def secret_key
-        UserAuth.token_secret_signature_key.call
-      end
+    # エンコードキー(config/initializers/user_auth.rb)
+    def secret_key
+      UserAuth.token_secret_signature_key.call
+    end
 
-      # デコードキー(config/initializers/user_auth.rb)
-      def decode_key
-        UserAuth.token_public_key || secret_key
-      end
+    # デコードキー(config/initializers/user_auth.rb)
+    def decode_key
+      UserAuth.token_public_key || secret_key
+    end
 
-      # アルゴリズム(config/initializers/user_auth.rb)
-      def algorithm
-        UserAuth.token_signature_algorithm
-      end
-      # オーディエンスの値がある場合にtrueを返す
-      def verify_audience?
-        UserAuth.token_audience.present?
-      end
+    # アルゴリズム(config/initializers/user_auth.rb)
+    def algorithm
+      UserAuth.token_signature_algorithm
+    end
 
-      # オーディエンス(config/initializers/user_auth.rb)
-      def token_audience
-        verify_audience? && UserAuth.token_audience.call
-      end
+    # オーディエンスの値がある場合にtrueを返す
+    def verify_audience?
+      UserAuth.token_audience.present?
+    end
 
-      # トークン有効期限を秒数で返す
-      def token_lifetime
-        @lifetime.from_now.to_i
-      end
+    # オーディエンス(config/initializers/user_auth.rb)
+    def token_audience
+      verify_audience? && UserAuth.token_audience.call
+    end
 
-      # デコード時オプション
-      def decode_options
-        {
-          aud: token_audience,
-          verify_aud: verify_audience?,
-          algorithm: algorithm
-        }
-      end
+    # トークン有効期限を秒数で返す
+    def token_lifetime
+      @lifetime.from_now.to_i
+    end
 
-      def claims
-        claims = {}
-        claims[:exp] = token_lifetime
-        claims[:aud] = token_audience if verify_audience?
-        claims
-      end
+    # デコード時オプション
+    def decode_options
+      {
+        aud: token_audience,
+        verify_aud: verify_audience?,
+        algorithm: algorithm
+      }
+    end
 
-      # エンコード時のヘッダー
-      def header_fields
-        { typ: "JWT" }
-      end
+    def claims
+      claims = {}
+      claims[:exp] = token_lifetime
+      claims[:aud] = token_audience if verify_audience?
+      claims
+    end
+
+    # エンコード時のヘッダー
+    def header_fields
+      { typ: 'JWT' }
+    end
   end
 end

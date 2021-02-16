@@ -5,16 +5,17 @@ module UserAuth
     end
 
     module ClassMethods
-      #渡されたトークンからユーザーを検索する
+      # 渡されたトークンからユーザーを検索する
       def from_token(token)
         auth_token = AuthToken.new(token: token)
         from_token_payload(auth_token.payload)
       end
 
       private
-        def from_token_payload(payload)
-          find(payload["sub"])
-        end
+
+      def from_token_payload(payload)
+        find(payload['sub'])
+      end
     end
 
     # トークンを返す
@@ -29,8 +30,9 @@ module UserAuth
     end
 
     private
-      def to_token_payload
-        { sub: id }
-      end
+
+    def to_token_payload
+      { sub: id }
+    end
   end
 end
