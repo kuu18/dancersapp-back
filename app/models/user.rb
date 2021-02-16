@@ -1,5 +1,6 @@
 require 'validator/email_validator'
 class User < ApplicationRecord
+  include UserAuth::Tokenizable
   before_validation :downcase_email
   validates :name, presence: true,
                    length: { maximum: 50, allow_blank: true }
