@@ -18,6 +18,11 @@ module UserAuth
       end
     end
 
+    # subjectからユーザーを検索する
+    def entity_for_user
+      User.find @payload["sub"]
+    end
+
     private
 
       # エンコードキー(config/initializers/user_auth.rb)
