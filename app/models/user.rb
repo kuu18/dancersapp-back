@@ -17,6 +17,10 @@ class User < ApplicationRecord
                        allow_nil: true
   has_secure_password
 
+  def my_json
+    as_json(only: %i[id name email created_at])
+  end
+
   private
 
   def downcase_email
