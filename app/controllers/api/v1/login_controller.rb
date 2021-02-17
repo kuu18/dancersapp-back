@@ -6,8 +6,8 @@ class Api::V1::LoginController < ApplicationController
   def create
     cookies[token_access_key] = cookie_token
     render json: {
-      exp: auth.payload[:exp],
-      user: entity.my_json
+      exp: _auth.payload[:exp],
+      user: _entity.my_json
     }
   end
 
@@ -17,35 +17,33 @@ class Api::V1::LoginController < ApplicationController
 
   private
 
-    # メールアドレスからアクティブなユーザーを返す
-    def entity
-      @_entity ||= User.find_by(email: auth_params[:email])
-    end
+  # メールアドレスからアクティブなユーザーを返す
+  def _entity
+    @_entity ||= User.find_by(email: auth_params[:email])
+  end
 
-    def auth_params
-      params.require(:auth).permit(:email, :password)
-    end
+  def auth_params
+    params.require(:auth).permit(:email, :password)
+  end
 
-    def auth
-      @_auth ||= UserAuth::AuthToken.new(payload: { sub: entity.id })
-    end
+  def _auth
+    @_auth ||= UserAuth::AuthToken.new(payload: { sub: _entity.id })
+  end
 
-    def cookie_token
-      {
-        value: auth.token,
-        expires: Time.at(auth.payload[:exp]),
-        secure: Rails.env.production?,
-        http_only: true
-      }
-    end
+  def cookie_token
+    {
+      value: _auth.token,
+      expires: Time.zone.at(_auth.payload[:exp]),
+      secure: Rails.env.production?,
+      http_only: true
+    }
+  end
 
-    def authenticate
-      unless entity.present? && entity.authenticate(auth_params[:password])
-        raise UserAuth.not_found_exception_class
-      end
-    end
+  def authenticate
+    raise UserAuth.not_found_exception_class unless _entity.present? && _entity.authenticate(auth_params[:password])
+  end
 
-    def not_found
-      head(:not_found)
-    end
+  def not_found
+    head(:not_found)
+  end
 end

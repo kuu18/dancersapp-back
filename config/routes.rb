@@ -6,7 +6,7 @@ Rails.application.routes.draw do
         get :current_user, action: :show, on: :collection
       end
       resources :login, only: [:create]
-      delete 'logout', to: 'login#destroy' 
+      delete 'logout', to: 'login#destroy'
     end
   end
 end
