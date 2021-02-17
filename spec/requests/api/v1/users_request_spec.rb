@@ -2,9 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Users', type: :request do
   describe 'UserAPI' do
+    let(:user) { create(:user) }
+
     before do
-      @user = create(:user)
-      logged_in(@user)
+      logged_in(user)
     end
 
     describe '/api/v1/users/current_user' do
@@ -17,7 +18,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
       end
 
       it 'is correct response' do
-        expect(@user.my_json).to eq response_body
+        expect(user.my_json).to eq response_body
       end
     end
   end
