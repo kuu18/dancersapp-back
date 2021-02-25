@@ -48,6 +48,8 @@ module App
 
     config.add_autoload_paths_to_load_path = false
 
+    config.middleware.use ActionDispatch::Cookies
+
     config.api_only = true
   end
 end
