@@ -30,9 +30,9 @@ RSpec.describe 'Authenticator', type: :request do
 
     it 'is two weeks exp' do
       t = 2.weeks.from_now
-      expt = Time.zone.at(payload['exp'])
+      exp = payload['exp']
       sec_per_min = 60
-      expect(Time.zone.at(expt.to_i / sec_per_min * sec_per_min)).to eq Time.zone.at(t.to_i / sec_per_min * sec_per_min)
+      expect(Time.zone.at(exp.to_i / sec_per_min * sec_per_min)).to eq Time.zone.at(t.to_i / sec_per_min * sec_per_min)
     end
   end
 
@@ -52,8 +52,8 @@ RSpec.describe 'Authenticator', type: :request do
       end
       # @userとcurrent_userは一致していること
 
-      it 'match @user and currenuser' do
-        expect(user).to eq @controller.send(:current_user)
+      it 'match user and currenuser' do
+        expect(user).to eq controller.send(:current_user)
       end
     end
     # トークンが無効な場合
@@ -73,7 +73,7 @@ RSpec.describe 'Authenticator', type: :request do
       # レスポンスが無いこと
 
       it 'response is blank' do
-        expect(@response.body).to be_blank
+        expect(response.body).to be_blank
       end
     end
     # トークンがnilの場合
@@ -90,8 +90,9 @@ RSpec.describe 'Authenticator', type: :request do
         expect(response.status).to eq(401)
       end
     end
+    # トークンの有効期限内はアクセス可能か
 
-    describe 'match @user and current_user within token exp' do
+    describe 'match user and current_user within token exp' do
       before do
         key = UserAuth.token_access_key
         cookies[key] = token
@@ -104,9 +105,10 @@ RSpec.describe 'Authenticator', type: :request do
       end
 
       it 'response current_user' do
-        expect(user).to eq @controller.send(:current_user)
+        expect(user).to eq controller.send(:current_user)
       end
     end
+    # トークンの有効期限が切れた場合はアクセス不可か
 
     describe 'is not access with expired token' do
       before do
@@ -133,11 +135,11 @@ RSpec.describe 'Authenticator', type: :request do
       end
 
       it 'prioritize header_token' do
-        expect(header_token).to eq @controller.send(:token)
+        expect(header_token).to eq controller.send(:token)
       end
 
       it 'prioritize other_user' do
-        expect(other_user).to eq @controller.send(:current_user)
+        expect(other_user).to eq controller.send(:current_user)
       end
     end
   end
