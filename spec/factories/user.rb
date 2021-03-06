@@ -5,6 +5,7 @@ FactoryBot.define do
     password = 'password'
     password { password }
     password_confirmation { password }
+    activated { false }
   end
 
   factory :other_user, class: 'User' do
@@ -13,5 +14,6 @@ FactoryBot.define do
     password = 'password'
     password { password }
     password_confirmation { password }
+    activated { false }
   end
 end
