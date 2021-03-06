@@ -147,26 +147,47 @@ RSpec.describe User, type: :model do
           end
         end
       end
-      # 同一のemailが既に登録されている場合は、無効であること
+    end
+    describe 'activated validation' do
 
-      context 'when already taken' do
-        it 'is invalid' do
-          FactoryBot.create(:user, email: 'test@example.com')
-          user.email = 'test@example.com'
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include('メールアドレスはすでに存在します')
+      # アクティブユーザーがいない場合、同一のemailが登録できていること
+
+      context "not uniqueness when activated false" do
+        it 'is valid' do
+          FactoryBot.create(:user, email: 'test@example.com', activated: false)
+          other_user = FactoryBot.build(:other_user, email: 'test@example.com')
+          other_user.save
+          expect(other_user).to be_valid
         end
       end
-      # emailの大文字と小文字を区別せず、一意ではない場合は、無効であること
 
-      context 'when case insensitive and not unipue' do
+      # 同一のemailでユーザーがアクティブの場合、無効であること
+
+      context 'already taken when activated true' do
         it 'is invalid' do
-          FactoryBot.create(:user, email: 'test@example.com')
-          user.email = 'TEST@EXAMPLE.COM'
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include('メールアドレスはすでに存在します')
+          FactoryBot.create(:user, email: 'test@example.com', activated: true)
+          other_user = FactoryBot.build(:other_user, email: 'test@example.com')
+          other_user.save
+          expect(other_user).to be_invalid
+          expect(other_user.errors.full_messages).to include('メールアドレスはすでに存在します')
         end
       end
+
+      # アクティブユーザーがいなくなった場合、ユーザーは保存できているか
+
+      context 'success save when active_user destroy' do
+        it 'is valid' do
+          email = 'test@example.com'
+          user = FactoryBot.create(:user, email: email, activated: true)
+          user.destroy!
+          other_user = FactoryBot.build(:other_user, email: email)
+          other_user.save
+          expect(other_user).to be_valid
+        end
+      end
+
+      
+
       # emailが小文字で保存されていること
 
       it 'is saved in lowercase' do

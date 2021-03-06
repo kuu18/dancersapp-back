@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Logins', type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, activated: true) }
 
   before do
     user_token_logged_in(user)
@@ -15,17 +15,17 @@ RSpec.describe 'Api::V1::Logins', type: :request do
 
   describe 'cookie' do
     let(:key) { UserAuth.token_access_key }
-    let(:cookie_token) { @request.cookie_jar[key] }
+    let(:cookie_token) { request.cookie_jar[key] }
 
     it 'save access_token to cookie' do
       expect(cookie_token).to be_present
     end
 
     describe 'cookie options' do
-      let(:cookie_options) { @request.cookie_jar.instance_variable_get(:@set_cookies)[key.to_s] }
-      let(:exp) { UserAuth::AuthToken.new(token: cookie_token).payload['exp'] }
+      let(:cookie_options) { request.cookie_jar.instance_variable_get(:@set_cookies)[key.to_s] }
 
       it 'match expires' do
+        exp = UserAuth::AuthToken.new(token: cookie_token).payload['exp']
         expect(Time.zone.at(exp)).to eq cookie_options[:expires]
       end
 
@@ -39,9 +39,8 @@ RSpec.describe 'Api::V1::Logins', type: :request do
     end
 
     describe 'cookie response' do
-      let(:exp) { UserAuth::AuthToken.new(token: cookie_token).payload['exp'] }
-
       it 'match expires' do
+        exp = UserAuth::AuthToken.new(token: cookie_token).payload['exp']
         expect(exp).to eq response_body['exp']
       end
 
@@ -56,7 +55,7 @@ RSpec.describe 'Api::V1::Logins', type: :request do
 
     describe 'before destroy' do
       it 'present acccess_token in cookie' do
-        expect(@request.cookie_jar[key]).to be_present
+        expect(request.cookie_jar[key]).to be_present
       end
     end
 
@@ -70,7 +69,7 @@ RSpec.describe 'Api::V1::Logins', type: :request do
       end
 
       it 'cookie is delete' do
-        expect(@request.cookie_jar[key]).to be_nil
+        expect(request.cookie_jar[key]).to be_nil
       end
     end
   end

@@ -19,7 +19,7 @@ class Api::V1::LoginController < ApplicationController
 
   # メールアドレスからアクティブなユーザーを返す
   def _entity
-    @_entity ||= User.find_by(email: auth_params[:email])
+    @_entity ||= User.find_activated(auth_params[:email])
   end
 
   def auth_params

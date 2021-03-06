@@ -47,5 +47,3 @@ RSpec/NestedGroups:
 RSpec/MultipleExpectations:
   Max: 2
 
-RSpec/InstanceVariable:
-  AssignmentOnly: true

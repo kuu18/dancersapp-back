@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Authenticator', type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, activated: true) }
   let(:token) { user.to_token }
+  let(:key) { UserAuth.token_access_key }
 
   describe 'jwt_decode' do
     let(:payload) { UserAuth::AuthToken.new(token: token).payload }
@@ -41,7 +42,6 @@ RSpec.describe 'Authenticator', type: :request do
 
     describe 'when valid token' do
       before do
-        key = UserAuth.token_access_key
         cookies[key] = token
         get '/api/v1/users/current_user'
       end
@@ -60,7 +60,6 @@ RSpec.describe 'Authenticator', type: :request do
 
     describe 'when invalid token' do
       before do
-        key = UserAuth.token_access_key
         invalid_token = "#{token}a"
         cookies[key] = invalid_token
         get '/api/v1/users/current_user'
@@ -80,7 +79,6 @@ RSpec.describe 'Authenticator', type: :request do
 
     describe 'when token is nil' do
       before do
-        key = UserAuth.token_access_key
         cookies[key] = nil
         get '/api/v1/users/current_user'
       end
@@ -94,7 +92,6 @@ RSpec.describe 'Authenticator', type: :request do
 
     describe 'match user and current_user within token exp' do
       before do
-        key = UserAuth.token_access_key
         cookies[key] = token
         travel_to(UserAuth.token_lifetime.from_now - 1.minute)
         get '/api/v1/users/current_user'
@@ -112,7 +109,6 @@ RSpec.describe 'Authenticator', type: :request do
 
     describe 'is not access with expired token' do
       before do
-        key = UserAuth.token_access_key
         cookies[key] = token
         travel_to(UserAuth.token_lifetime.from_now + 1.minute)
         get '/api/v1/users/current_user'
@@ -129,7 +125,6 @@ RSpec.describe 'Authenticator', type: :request do
       let(:header_token) { other_user.to_token }
 
       before do
-        key = UserAuth.token_access_key
         cookies[key] = token
         get '/api/v1/users/current_user', headers: { Authorization: "Bearer #{header_token}" }
       end
