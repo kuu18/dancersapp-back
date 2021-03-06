@@ -148,12 +148,12 @@ RSpec.describe User, type: :model do
         end
       end
     end
-    describe 'activated validation' do
 
+    describe 'activated validation' do
       # アクティブユーザーがいない場合、同一のemailが登録できていること
 
-      context "not uniqueness when activated false" do
-        it 'is valid' do
+      context 'when activated false' do
+        it 'allow not uniquness email' do
           FactoryBot.create(:user, email: 'test@example.com', activated: false)
           other_user = FactoryBot.build(:other_user, email: 'test@example.com')
           other_user.save
@@ -163,9 +163,12 @@ RSpec.describe User, type: :model do
 
       # 同一のemailでユーザーがアクティブの場合、無効であること
 
-      context 'already taken when activated true' do
-        it 'is invalid' do
+      context 'when activated true' do
+        before do
           FactoryBot.create(:user, email: 'test@example.com', activated: true)
+        end
+
+        it 'is invalid and already taken' do
           other_user = FactoryBot.build(:other_user, email: 'test@example.com')
           other_user.save
           expect(other_user).to be_invalid
@@ -175,18 +178,20 @@ RSpec.describe User, type: :model do
 
       # アクティブユーザーがいなくなった場合、ユーザーは保存できているか
 
-      context 'success save when active_user destroy' do
-        it 'is valid' do
-          email = 'test@example.com'
+      context 'when active_user destroy' do
+        let(:email) { 'test@example.com' }
+
+        before do
           user = FactoryBot.create(:user, email: email, activated: true)
           user.destroy!
+        end
+
+        it 'is valid and success save' do
           other_user = FactoryBot.build(:other_user, email: email)
           other_user.save
           expect(other_user).to be_valid
         end
       end
-
-      
 
       # emailが小文字で保存されていること
 
