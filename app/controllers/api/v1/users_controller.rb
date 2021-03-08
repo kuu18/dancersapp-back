@@ -4,8 +4,10 @@ class Api::V1::UsersController < ApplicationController
   def create
     @user = User.new(signup_params)
     if @user.save
+      @user.send_email_for(:account_activation)
       type = 'info'
-      msg = '認証メールを送信しました。'
+      msg = '認証メールを送信しました。' \
+            '２時間以内にメール認証を完了してください'
     else
       type = 'error'
       errors = @user.errors.full_messages.join(', ').to_s
