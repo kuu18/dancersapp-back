@@ -11,6 +11,12 @@ module UserAuth
         from_token_payload(auth_token.payload)
       end
 
+      # token_lifetimeの日本語変換を返す
+      def time_limit(lifetime)
+        time, period = lifetime.inspect.sub(/s\z/, '').split
+        time + I18n.t("datetime.periods.#{period}", default: '')
+      end
+
       private
 
       def from_token_payload(payload)
@@ -25,8 +31,7 @@ module UserAuth
 
     # 有効期限付きのトークンを返す
     def to_lifetime_token(lifetime)
-      auth = AuthToken.new(lifetime: lifetime, payload: to_token_payload)
-      { token: auth.token, lifetime_text: auth.lifetime_text }
+      AuthToken.new(lifetime: lifetime, payload: to_token_payload).token
     end
 
     private

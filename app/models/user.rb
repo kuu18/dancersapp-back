@@ -34,6 +34,12 @@ class User < ApplicationRecord
     as_json(only: %i[id name email created_at])
   end
 
+  def send_email_for(mailer)
+    mail = UserMailer.send(mailer, self)
+    mail.transport_encoding = '8bit' if Rails.env.development?
+    mail.deliver_now
+  end
+
   private
 
   def downcase_email

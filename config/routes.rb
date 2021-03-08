@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       end
       resources :login, only: [:create]
       delete 'logout', to: 'login#destroy'
+      resources :account_activations, only: [:index]
     end
   end
 end

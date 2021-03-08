@@ -30,10 +30,9 @@ RSpec.describe 'Authenticator', type: :request do
     # 有効期限が2週間であること（秒数切り捨て）
 
     it 'is two weeks exp' do
-      t = 2.weeks.from_now
+      time = 2.weeks.from_now.to_i
       exp = payload['exp']
-      sec_per_min = 60
-      expect(Time.zone.at(exp.to_i / sec_per_min * sec_per_min)).to eq Time.zone.at(t.to_i / sec_per_min * sec_per_min)
+      expect(exp).to eq time
     end
   end
 

@@ -4,6 +4,10 @@ RSpec.describe 'Api::V1::Users', type: :request do
   describe 'UserAPI' do
     describe 'POST /api/v1/users' do
       context 'when valid request' do
+        before do
+          ActionMailer::Base.deliveries.clear
+        end
+
         let(:user_params) do
           attributes_for(:user, name: 'Test',
                                 email: 'test@example.com',
@@ -21,6 +25,11 @@ RSpec.describe 'Api::V1::Users', type: :request do
           expect(response.status).to eq 200
         end
 
+        it 'send mail' do
+          post '/api/v1/users', params: { user: user_params }
+          expect(ActionMailer::Base.deliveries.size).to eq 1
+        end
+
         it 'response include type info' do
           post '/api/v1/users', params: { user: user_params }
           expect(response_body['type']).to eq 'info'
@@ -28,7 +37,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
         it 'response include correct msg' do
           post '/api/v1/users', params: { user: user_params }
-          expect(response_body['msg']).to eq '認証メールを送信しました。'
+          expect(response_body['msg']).to eq '認証メールを送信しました。２時間以内にメール認証を完了してください'
         end
 
         it 'response include errors nill' do

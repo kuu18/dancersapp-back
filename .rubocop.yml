@@ -52,3 +52,6 @@ RSpec/MultipleExpectations:
 
 RSpec/InstanceVariable:
   AssignmentOnly: true
+
+Metrics/AbcSize:
+  Max: 20
