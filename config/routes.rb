@@ -8,6 +8,8 @@ Rails.application.routes.draw do
       resources :login, only: [:create]
       delete 'logout', to: 'login#destroy'
       resources :account_activations, only: [:index]
+      resources :password_resets,     only: %i[create index]
+      patch '/password_resets', to: 'password_resets#update'
     end
   end
 end

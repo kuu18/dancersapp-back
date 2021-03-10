@@ -51,7 +51,7 @@ RSpec.describe 'Authenticator', type: :request do
       end
       # @userとcurrent_userは一致していること
 
-      it 'match user and currenuser' do
+      it 'match user and currentuser' do
         expect(user).to eq controller.send(:current_user)
       end
     end
