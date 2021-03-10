@@ -3,14 +3,12 @@ require 'rails_helper'
 RSpec.describe UserMailer, type: :mailer do
   describe 'account_activation' do
     let(:user) { create(:user) }
-    let(:life_time) { 2.hours }
-    let(:token) { user.to_lifetime_token(life_time) }
-    let(:token_limit) { User.time_limit(life_time) }
+    let(:token) { user.to_lifetime_token(2.hours) }
     let(:mail) { described_class.account_activation(user) }
 
     describe 'renders the headers' do
       it 'subject eq メールアドレスのご確認' do
-        expect(mail.subject).to eq('メールアドレスのご確認')
+        expect(mail.subject).to eq("#{ENV['APP_NAME']}のメールアドレスのご確認")
       end
 
       it 'to eq user.email' do
@@ -32,33 +30,57 @@ RSpec.describe UserMailer, type: :mailer do
         expect(mail.html_part.body.encoded).to match(ENV['APP_NAME'])
       end
 
+      it 'include user name' do
+        expect(mail.text_part.body.encoded).to match(user.name)
+        expect(mail.html_part.body.encoded).to match(user.name)
+      end
+
       it 'include token' do
         expect(mail.text_part.body.encoded).to match(token)
         expect(mail.html_part.body.encoded).to match(token)
       end
 
-      it 'lifetime_text eq ２時間' do
-        expect(token_limit).to eq('2時間')
-      end
-
-      it 'include life_time_text' do
-        expect(mail.text_part.body.encoded).to match(token_limit)
-        expect(mail.html_part.body.encoded).to match(token_limit)
+      it 'include life_time 2.hours' do
+        expect(mail.text_part.body.encoded).to match('2時間')
+        expect(mail.html_part.body.encoded).to match('2時間')
       end
     end
   end
 
   describe 'password_reset' do
-    let(:mail) { described_class.password_reset }
+    let(:user) { create(:user) }
+    let(:token) { user.to_lifetime_token(30.minutes) }
+    let(:mail) { described_class.password_reset(user) }
 
-    it 'renders the headers' do
-      expect(mail.subject).to eq('Password reset')
-      expect(mail.to).to eq(['to@example.org'])
-      expect(mail.from).to eq(['noreply@example.com'])
+    describe 'renders the headers' do
+      it 'subject eq メールアドレスのご確認' do
+        expect(mail.subject).to eq("#{ENV['APP_NAME']}のパスワード再設定のご案内")
+      end
+
+      it 'to eq user.email' do
+        expect(mail.to).to eq([user.email])
+      end
+
+      it 'from eq noreply@example.com' do
+        expect(mail.from).to eq(['noreply@example.com'])
+      end
     end
 
-    it 'renders the body' do
-      expect(mail.body.encoded).to match('Hi')
+    describe 'renders the body' do
+      it 'include user name' do
+        expect(mail.text_part.body.encoded).to match(user.name)
+        expect(mail.html_part.body.encoded).to match(user.name)
+      end
+
+      it 'include token' do
+        expect(mail.text_part.body.encoded).to match(token)
+        expect(mail.html_part.body.encoded).to match(token)
+      end
+
+      it 'include life_time 1.hours' do
+        expect(mail.text_part.body.encoded).to match('30分')
+        expect(mail.html_part.body.encoded).to match('30分')
+      end
     end
   end
 end

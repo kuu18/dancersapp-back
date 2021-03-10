@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::AccountActivations', type: :request do
-  describe 'GET /api/v1/account_activations' do
-    let(:user) { create(:user) }
+  describe 'patch /api/v1/password_resets' do
+    let(:user) { create(:user, activated: false) }
     let(:token) { user.to_lifetime_token(2.hours) }
     let(:header) { { Authorization: "Bearer #{token}" } }
     # ヘッダーにトークンがない場合
@@ -80,6 +80,10 @@ RSpec.describe 'Api::V1::AccountActivations', type: :request do
         it 'correct response exp' do
           expect(response_body['exp']).to eq 2.weeks.from_now.to_i
         end
+
+        it 'change activated' do
+          expect(user.reload.activated).to eq true
+        end
       end
       # ユーザーがすでにメールアドレスを登録している時
 
@@ -133,7 +137,7 @@ RSpec.describe 'Api::V1::AccountActivations', type: :request do
         end
       end
     end
-    # トークンの有効期限が切れている時
+    # トークンの有効期限（2時間）が切れている時
 
     describe 'token life_time' do
       context 'when token is expired' do

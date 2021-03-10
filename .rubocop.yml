@@ -40,6 +40,7 @@ Style/FrozenStringLiteralComment:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
+    - 'config/**/*'
 
 Metrics/MethodLength:
   Max: 25
@@ -54,4 +55,7 @@ RSpec/InstanceVariable:
   AssignmentOnly: true
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 6
