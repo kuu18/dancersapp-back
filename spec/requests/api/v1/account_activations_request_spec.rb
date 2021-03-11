@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::AccountActivations', type: :request do
-  describe 'patch /api/v1/password_resets' do
-    let(:user) { create(:user, activated: false) }
+  describe 'get /api/v1/account_activations' do
+    let(:user) { create(:user, activated: false, email: 'test@example.com') }
     let(:token) { user.to_lifetime_token(2.hours) }
     let(:header) { { Authorization: "Bearer #{token}" } }
     # ヘッダーにトークンがない場合
@@ -90,11 +90,11 @@ RSpec.describe 'Api::V1::AccountActivations', type: :request do
       context 'when email already taken' do
         before do
           other_user = FactoryBot.create(:user, email: 'test@example.com')
-          other_token = other_user.to_lifetime_token(2.hours)
-          other_header = { Authorization: "Bearer #{other_token}" }
+          token = other_user.to_lifetime_token(2.hours)
+          header = { Authorization: "Bearer #{token}" }
           user.activated = true
           user.save
-          get '/api/v1/account_activations', headers: other_header
+          get '/api/v1/account_activations', headers: header
         end
         # 200を返すこと
 

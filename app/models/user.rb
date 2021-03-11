@@ -6,6 +6,14 @@ class User < ApplicationRecord
                    length: { maximum: 50, allow_blank: true }
   validates :email, presence: true,
                     email: { allow_blank: true }
+  VALID_USER_NAME_REGEX = /\A(?!\.)[\w.]+(?<!\.)\z/.freeze
+  validates :user_name, presence: true,
+                        length: { minimum: 7, maximum: 50, allow_blank: true },
+                        format: {
+                          with: VALID_USER_NAME_REGEX,
+                          message: :invalid_user_name
+                        },
+                        uniqueness: { case_sensitive: false }
   VALID_PASSWORD_REGEX = /\A[\w\-]+\z/.freeze
   validates :password, presence: true,
                        length: { minimum: 8 },
@@ -31,7 +39,7 @@ class User < ApplicationRecord
   end
 
   def my_json
-    as_json(only: %i[id name email created_at])
+    as_json(only: %i[id name user_name email created_at])
   end
 
   def send_email_for(mailer)
