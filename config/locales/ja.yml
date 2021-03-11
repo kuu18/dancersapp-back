@@ -4,6 +4,7 @@ ja:
       user:
         name: 名前
         email: メールアドレス
+        user_name: ユーザーネーム
         password: パスワード
         activated: アクティブフラグ
         admin: 管理者フラグ
@@ -123,6 +124,7 @@ ja:
   errors:
     format: "%{attribute}%{message}"
     messages:
+      invalid_user_name: は半角英数字•ﾋﾟﾘｵﾄﾞ•ｱﾝﾀﾞｰﾊﾞｰが使えます
       invalid_password: は半角英数字•ﾊｲﾌﾝ•ｱﾝﾀﾞｰﾊﾞｰが使えます
       accepted: を受諾してください
       blank: を入力してください

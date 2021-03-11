@@ -54,6 +54,137 @@ RSpec.describe User, type: :model do
         end
       end
     end
+
+    # user_nameのvalidationテスト
+    describe 'user_name validation' do
+      # user_nameが存在する場合は有効であること
+      context 'when present' do
+        it 'is valid ' do
+          user.user_name = 'user_name'
+          expect(user).to be_valid
+        end
+      end
+      # user_nameが空の場合は無効であること
+
+      context 'when user_name is empty' do
+        required_msg = 'ユーザーネームを入力してください'
+        it 'is invalid when " "' do
+          user.user_name = '  '
+          user.valid?
+          expect(user.errors.full_messages).to include(required_msg)
+        end
+
+        it 'is invalid when ""' do
+          user.user_name = ''
+          user.valid?
+          expect(user.errors.full_messages).to include(required_msg)
+        end
+
+        it 'is invalid when nil' do
+          user.user_name = nil
+          user.valid?
+          expect(user.errors.full_messages).to include(required_msg)
+        end
+      end
+
+      # user_nameが50文字以下の場合は有効であること
+
+      context 'when length is 50 characters or less' do
+        it 'is valid' do
+          user.user_name = 'a' * 50
+          expect(user).to be_valid
+        end
+      end
+      # user_nameが50文字より長い場合は無効であること
+
+      context 'when length is more than 50 characters' do
+        it 'is invalid' do
+          user.user_name = 'a' * 51
+          user.valid?
+          expect(user.errors.full_messages).to include('ユーザーネームは50文字以内で入力してください')
+        end
+      end
+
+      # user_nameが７文字以上の場合は有効であること
+
+      context 'when length is 7 characters or less' do
+        it 'is valid' do
+          user.user_name = 'a' * 7
+          expect(user).to be_valid
+        end
+      end
+      # user_nameが7文字より短い場合は無効であること
+
+      context 'when length is less than 7 characters' do
+        it 'is invalid' do
+          user.user_name = 'a' * 6
+          user.valid?
+          expect(user.errors.full_messages).to include('ユーザーネームは7文字以上で入力してください')
+        end
+      end
+
+      # 同一のuser_nameが既に登録されている場合は、無効であること
+
+      context 'when already taken' do
+        it 'is invalid' do
+          FactoryBot.create(:other_user, user_name: 'user_name')
+          user.user_name = 'user_name'
+          user.valid?
+          expect(user.errors.full_messages).to include('ユーザーネームはすでに存在します')
+        end
+      end
+    end
+    # user_nameの大文字と小文字を区別せず、一意ではない場合は、無効であること
+
+    context 'when case insensitive and not unipue' do
+      it 'is invalid' do
+        FactoryBot.create(:other_user, user_name: 'user_name')
+        user.user_name = 'USER_NAME'
+        user.valid?
+        expect(user.errors.full_messages).to include('ユーザーネームはすでに存在します')
+      end
+    end
+
+    # user_nameの形式が正しい場合は、有効であること
+
+    context 'when correct format' do
+      ok_user_names = %w[
+        user__name
+        ________
+        ____name
+        user...name
+        us.er.na.me
+        1234567
+        USERNAME
+      ]
+      it 'is valid' do
+        ok_user_names.each do |user_name|
+          user.user_name = user_name
+          expect(user).to be_valid
+        end
+      end
+    end
+    # user_nameの形式が正しくない場合は、無効であること
+
+    context 'when incorrect format' do
+      ng_user_names = %w[
+        user/name
+        user-name
+        |~=?+"a"
+        １２３４５６７８
+        ＡＢＣＤＥＦＧＨ
+        username@
+        ...username
+        username...
+      ]
+      it 'is invalid' do
+        ng_user_names.each do |user_name|
+          user.user_name = user_name
+          user.valid?
+          expect(user.errors.full_messages).to include('ユーザーネームは半角英数字•ﾋﾟﾘｵﾄﾞ•ｱﾝﾀﾞｰﾊﾞｰが使えます')
+        end
+      end
+    end
     # emailのvalidationテスト
 
     describe 'email validation' do

@@ -10,6 +10,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
         let(:user_params) do
           attributes_for(:user, name: 'Test',
+                                user_name: 'user_name',
                                 email: 'test@example.com',
                                 password: 'password')
         end
@@ -50,6 +51,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
         let(:user_params) do
           attributes_for(:user, name: '',
                                 email: 'user@invalid',
+                                user_name: 'invalid-user-name',
                                 password: '')
         end
 
@@ -76,7 +78,8 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
         it 'response include errors email' do
           post '/api/v1/users', params: { user: user_params }
-          expect(response_body['errors']).to include '名前を入力してください', 'メールアドレスは不正な値です', 'パスワードを入力してください'
+          expect(response_body['errors']).to include '名前を入力してください', 'メールアドレスは不正な値です', 'パスワードを入力してください',
+                                                     'ユーザーネームは半角英数字•ﾋﾟﾘｵﾄﾞ•ｱﾝﾀﾞｰﾊﾞｰが使えます'
         end
       end
 
