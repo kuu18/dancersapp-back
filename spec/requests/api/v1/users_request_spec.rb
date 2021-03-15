@@ -111,5 +111,282 @@ RSpec.describe 'Api::V1::Users', type: :request do
         expect(user.my_json).to eq response_body
       end
     end
+
+    describe 'PATCH /api/v1/users/update_profile' do
+      let(:user) { create(:user, name: 'Test', user_name: 'test_user_name') }
+
+      before do
+        logged_in(user)
+      end
+      # 　ユーザー情報の更新に成功した時
+
+      context 'when success update user' do
+        before do
+          patch '/api/v1/users/update_profile', params: { user: { name: 'Update', user_name: 'update_user_name' } }
+        end
+        # 　レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = プロフィールを変更しましたが返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq 'プロフィールを変更しました'
+        end
+        # 　type = successが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'success'
+        end
+        # 　名前がUpdateに変わっていること
+
+        it 'change name Update' do
+          expect(user.reload.name).to eq 'Update'
+        end
+        # 　ユーザーネームがupdate_user_nameに変わっていること
+
+        it 'change user_name update_user_name' do
+          expect(user.reload.user_name).to eq 'update_user_name'
+        end
+      end
+      # 　ユーザー情報の変更に失敗した時
+
+      context 'when failure update' do
+        before do
+          patch '/api/v1/users/update_profile', params: { user: { name: 'Update', user_name: 'update-user-name' } }
+        end
+        # レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = プロフィールの変更に失敗しましたが返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq 'プロフィールの変更に失敗しました'
+        end
+        # 　type = errorが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'error'
+        end
+      end
+    end
+
+    describe 'PATCH /api/v1/users/chenge_email' do
+      let(:user) { create(:user, email: 'test@example.com', activated: true) }
+
+      before do
+        ActionMailer::Base.deliveries.clear
+        logged_in(user)
+      end
+      # 　メールアドレスの変更に成功した時
+
+      context 'when success change email' do
+        before do
+          patch '/api/v1/users/chenge_email', params: { user: { email: 'change_email@example.com' } }
+        end
+        # 　レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = 認証メールを送信しました。２時間以内にメール認証を完了してくださいが返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq '認証メールを送信しました。２時間以内にメール認証を完了してください'
+        end
+        # 　type = infoが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'info'
+        end
+        # 　アクティブフラグがfalseになっていること
+
+        it 'change activated false' do
+          expect(user.reload.activated).to eq false
+        end
+        # 　メールアドレスがchange_email@example.comに変わっていること
+
+        it 'change email change_email@example.com' do
+          expect(user.reload.email).to eq 'change_email@example.com'
+        end
+        # 　メールが送信されていること
+
+        it 'send mail' do
+          expect(ActionMailer::Base.deliveries.size).to eq 1
+        end
+      end
+      # 　メールアドレスの変更に失敗した時
+
+      context 'when failure change email' do
+        before do
+          patch '/api/v1/users/chenge_email', params: { user: { email: 'test@example.com' } }
+        end
+        # レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = 'エラーがあります'が返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq 'エラーがあります'
+        end
+        # 　type = errorが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'error'
+        end
+      end
+    end
+
+    describe 'PATCH /api/v1/users/chenge_password' do
+      let(:user) { create(:user, password: 'password') }
+
+      before do
+        logged_in(user)
+      end
+      # 　パスワードの変更に成功した時
+
+      context 'when success change password' do
+        before do
+          patch '/api/v1/users/chenge_password',
+                params: { user: { password: 'change_password', old_password: 'password' } }
+        end
+        # 　レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = パスワードを変更しましたが返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq 'パスワードを変更しました'
+        end
+        # 　type = infoが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'success'
+        end
+        # 　パスワードがchange_passwordに変わっていること
+
+        it 'change password to change_password' do
+          user.reload
+          expect(user.authenticate('password')).to be_falsey
+          expect(user.authenticate('change_password')).to eq user
+        end
+      end
+      # 　パスワードの変更に失敗した時
+
+      context 'when failure change password' do
+        before do
+          patch '/api/v1/users/chenge_password', params: { user: { password: 'password', old_password: 'password' } }
+        end
+        # レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = 'エラーがあります'が返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq 'エラーがあります'
+        end
+        # 　type = errorが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'error'
+        end
+      end
+      # 　現在のパスワードが違う場合
+
+      context 'when old_password is incorrect' do
+        before do
+          patch '/api/v1/users/chenge_password',
+                params: { user: { password: 'change_password', old_password: 'incorrect_password' } }
+        end
+        # レスポンス200が返ってくること
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+        # 　msg = '現在のパスワードが違います'が返ってきていること
+
+        it 'response correct msg' do
+          expect(response_body['msg']).to eq '現在のパスワードが違います'
+        end
+        # 　type = errorが返ってきていること
+
+        it 'response correct type' do
+          expect(response_body['type']).to eq 'error'
+        end
+      end
+    end
+
+    describe 'DELETE /api/v1/users' do
+      let(:user) { create(:user, password: 'password') }
+
+      before do
+        logged_in(user)
+      end
+      # 　パスワードの認証に成功した時
+
+      context 'when success user_params password authenticate' do
+        # 　レスポンス200が返ってくること
+        it 'response 200' do
+          delete '/api/v1/users', params: { user: { password: 'password' } }
+          expect(response.status).to eq 200
+        end
+        # 　msg = アカウントを削除しましたが返ってきていること
+
+        it 'response correct msg' do
+          delete '/api/v1/users', params: { user: { password: 'password' } }
+          expect(response_body['msg']).to eq 'アカウントを削除しました'
+        end
+        # 　type = successが返ってきていること
+
+        it 'response correct type' do
+          delete '/api/v1/users', params: { user: { password: 'password' } }
+          expect(response_body['type']).to eq 'success'
+        end
+        # 　ユーザーが削除されていること
+
+        it 'delete user' do
+          expect do
+            delete '/api/v1/users', params: { user: { password: 'password' } }
+          end.to change(User, :count).by(-1)
+        end
+      end
+      # 　パスワードの認証に失敗した時
+
+      context 'when failure user_params password authenticate' do
+        # 　レスポンス200が返ってくること
+        it 'response 200' do
+          delete '/api/v1/users', params: { user: { password: 'incorrect_password' } }
+          expect(response.status).to eq 200
+        end
+        # 　msg = パスワードが違いますが返ってきていること
+
+        it 'response correct msg' do
+          delete '/api/v1/users', params: { user: { password: 'incorrect_password' } }
+          expect(response_body['msg']).to eq 'パスワードが違います'
+        end
+        # 　type = errorが返ってきていること
+
+        it 'response correct type' do
+          delete '/api/v1/users', params: { user: { password: 'incorrect_password' } }
+          expect(response_body['type']).to eq 'error'
+        end
+        # 　ユーザーが削除されていないこと
+
+        it 'not delete user' do
+          expect do
+            delete '/api/v1/users', params: { user: { password: 'incorrect_password' } }
+          end.to change(User, :count).by(0)
+        end
+      end
+    end
   end
 end

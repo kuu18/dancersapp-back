@@ -228,34 +228,5 @@ RSpec.describe 'Api::V1::PasswordResets', type: :request do
         expect(response_body['msg']).to eq 'パスワード再設定に失敗しました。もう一度操作をやり直してください'
       end
     end
-    # トークンの有効期限（30分）が切れている時
-
-    describe 'token life_time' do
-      context 'when token is expired' do
-        before do
-          token = user.to_lifetime_token(30.minutes)
-          travel_to(30.minutes.from_now + 1.minute)
-          header = { Authorization: "Bearer #{token}" }
-          patch '/api/v1/password_resets', params: user_params, headers: header
-        end
-
-        it 'response 401' do
-          expect(response.status).to eq(401)
-        end
-      end
-
-      context 'when token is within life_time' do
-        before do
-          token = user.to_lifetime_token(30.minutes)
-          travel_to(30.minutes.from_now - 1.minute)
-          header = { Authorization: "Bearer #{token}" }
-          patch '/api/v1/password_resets', params: user_params, headers: header
-        end
-
-        it 'response 200' do
-          expect(response.status).to eq(200)
-        end
-      end
-    end
   end
 end
