@@ -26,7 +26,7 @@ class Api::V1::PasswordResetsController < ApplicationController
       @user.errors.add(:password, :blank)
       payload = {
         type: 'error',
-        msg: @user.errors.full_messages.join(', ').to_s
+        msg: @user.errors.full_messages
       }
     elsif @user.update(user_params)
       cookies[token_access_key] = cookie_token

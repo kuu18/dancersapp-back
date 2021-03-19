@@ -8,6 +8,7 @@ Rails.application.routes.draw do
         patch :chenge_email, action: :change_email, on: :collection
         patch :chenge_password, action: :change_password, on: :collection
       end
+      resources :eventposts, only: [:index, :create, :destroy]
       delete '/users', to: 'users#destroy'
       resources :login, only: [:create]
       delete '/logout', to: 'login#destroy'

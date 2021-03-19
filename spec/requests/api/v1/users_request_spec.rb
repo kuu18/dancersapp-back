@@ -38,7 +38,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
         it 'response include correct msg' do
           post '/api/v1/users', params: { user: user_params }
-          expect(response_body['msg']).to eq '認証メールを送信しました。２時間以内にメール認証を完了してください'
+          expect(response_body['msg']).to include '認証メールを送信しました。２時間以内にメール認証を完了してください'
         end
 
         it 'response include errors nill' do
@@ -90,7 +90,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
         it 'response include errors already taken' do
           post '/api/v1/users', params: { user: attributes_for(:user, email: 'test@example.com') }
-          expect(response_body['errors']).to eq 'メールアドレスはすでに存在します'
+          expect(response_body['errors']).to include 'メールアドレスはすでに存在します'
         end
       end
     end
@@ -329,8 +329,10 @@ RSpec.describe 'Api::V1::Users', type: :request do
       let(:user) { create(:user, password: 'password') }
 
       before do
+        create(:eventpost, :default, user: user)
         logged_in(user)
       end
+
       # 　パスワードの認証に成功した時
 
       context 'when success user_params password authenticate' do
@@ -357,6 +359,13 @@ RSpec.describe 'Api::V1::Users', type: :request do
           expect do
             delete '/api/v1/users', params: { user: { password: 'password' } }
           end.to change(User, :count).by(-1)
+        end
+        # 　イベントが削除されていること
+
+        it 'delete eventpost' do
+          expect do
+            delete '/api/v1/users', params: { user: { password: 'password' } }
+          end.to change(Eventpost, :count).by(-1)
         end
       end
       # 　パスワードの認証に失敗した時

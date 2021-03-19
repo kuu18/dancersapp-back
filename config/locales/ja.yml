@@ -8,6 +8,10 @@ ja:
         password: パスワード
         activated: アクティブフラグ
         admin: 管理者フラグ
+      eventpost:
+        content: イベント概要
+        event_name: イベント名
+        event_date: イベント日
     errors:
       messages:
         record_invalid: 'バリデーションに失敗しました: %{errors}'
@@ -124,6 +128,7 @@ ja:
   errors:
     format: "%{attribute}%{message}"
     messages:
+      invalid_event_date: は今日以降のものを選択してください
       invalid_user_name: は半角英数字•ﾋﾟﾘｵﾄﾞ•ｱﾝﾀﾞｰﾊﾞｰが使えます
       invalid_password: は半角英数字•ﾊｲﾌﾝ•ｱﾝﾀﾞｰﾊﾞｰが使えます
       accepted: を受諾してください
