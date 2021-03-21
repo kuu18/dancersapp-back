@@ -1,6 +1,7 @@
 require 'validator/email_validator'
 class User < ApplicationRecord
   include UserAuth::Tokenizable
+  has_many :eventposts, dependent: :destroy
   before_validation :downcase_email
   validates :name, presence: true,
                    length: { maximum: 50, allow_blank: true }
@@ -46,6 +47,10 @@ class User < ApplicationRecord
     mail = UserMailer.send(mailer, self)
     mail.transport_encoding = '8bit' if Rails.env.development?
     mail.deliver_now
+  end
+
+  def feed
+    Eventpost.where('user_id = ?', id)
   end
 
   private

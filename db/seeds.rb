@@ -7,6 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 table_names = %w(
   users
+  eventposts
 )
 
 table_names.each do |table_name|

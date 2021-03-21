@@ -10,7 +10,7 @@ class Api::V1::UsersController < ApplicationController
             '２時間以内にメール認証を完了してください'
     else
       type = 'error'
-      errors = @user.errors.full_messages.join(', ').to_s
+      errors = @user.errors.full_messages
     end
     render json: {
       type: type,

@@ -148,7 +148,7 @@ RSpec.describe 'Api::V1::PasswordResets', type: :request do
       # 正しいエラーメッセージが返ってきてること
 
       it 'correct response msg' do
-        expect(response_body['msg']).to eq 'パスワードを入力してください'
+        expect(response_body['msg']).to include 'パスワードを入力してください'
       end
     end
     # 　正しいヘッダーとパスワードが送られた時

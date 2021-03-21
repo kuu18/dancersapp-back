@@ -17,6 +17,8 @@ gem 'puma', '~> 4.1'
 gem 'bcrypt', '~> 3.1.7'
 
 # Use Active Storage variant
+gem 'active_storage_validations'
+gem 'aws-sdk-s3',              '1.46.0', require: false
 # gem 'image_processing', '~> 1.2'
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -32,6 +34,10 @@ gem 'hirb-unicode-steakknife', '~> 0.0.9'
 gem 'jwt', '~> 2.2'
 
 gem 'rails_same_site_cookie'
+
+gem 'faker'
+
+gem 'rounding'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
