@@ -10,7 +10,8 @@ RSpec.describe "Api::V1::Eventposts", type: :request do
       let(:eventpost_params) do
         attributes_for(:eventpost, event_name: 'MyEvent',
                                    content: "MyEventContent",
-                                   event_date: Time.current.since(1.month))
+                                   event_date: Time.current.since(1.month),
+                                   image: fixture_file_upload("/test_image.jpeg"))
       end
       it 'response 200' do
         post '/api/v1/eventposts', params: eventpost_params

@@ -171,5 +171,27 @@ RSpec.describe Eventpost, type: :model do
         expect(most_recent).to eq(Eventpost.first)
       end
     end
+
+    #　画像のバリデーションテスト
+
+    describe 'image validation' do
+      context 'when image is present' do
+        before do
+          eventpost.image = fixture_file_upload("/test_image.jpeg")
+        end
+        it 'is valid ' do
+          expect(eventpost).to be_valid
+        end
+      end
+      context 'when image is nil' do
+        before do
+          eventpost.image.attach(nil)
+        end
+        it 'is invalid' do
+          expect(eventpost).to be_invalid
+          expect(eventpost.errors.full_messages).to include('画像を選択してください')
+        end
+      end
+    end
   end
 end
