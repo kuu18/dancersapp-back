@@ -11,17 +11,17 @@ class Api::V1::EventpostsController < ApplicationController
   def create
     @eventpost = current_user.eventposts.build(eventpost_params)
     @eventpost.image.attach(params[:image])
-    if @eventpost.save
-      payload = {
-        type: 'success',
-        msg: 'イベントを作成しました'
-      }
-    else
-      payload = {
-        type: 'error',
-        errors: @eventpost.errors.full_messages
-      }
-    end
+      if @eventpost.save
+        payload = {
+          type: 'success',
+          msg: 'イベントを作成しました'
+        }
+      else
+        payload = {
+          type: 'error',
+          errors: @eventpost.errors.full_messages
+        }
+      end
     render json: payload
   end
 

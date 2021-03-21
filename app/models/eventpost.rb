@@ -7,10 +7,11 @@ class Eventpost < ApplicationRecord
   validates :content, presence: true, length: { maximum: 140 }
   validates :event_name, presence: true, length: { maximum: 50 }
   validates :event_date, presence: true
-  validates :image,   content_type: { in: %w[image/jpeg image/gif image/png],
-                                      message: "（画像）ファイル名の拡張子を確認してください" },
+  validates :image,   presence: { message: :require_eventpost_image },
+                      content_type: { in: %w[image/jpeg image/gif image/png],
+                                      message: :invalid_eventpost_image },
                       size:         { less_than: 5.megabytes,
-                                      message: "画像のサイズが大きすぎます" }
+                                      message: :invalid_eventpost_image_size }
   validate :date_before_today
 
   def event_json
@@ -24,5 +25,9 @@ class Eventpost < ApplicationRecord
 
   def image_url
     image.attached? ? url_for(image) : nil
+  end
+
+  def image_present
+    image.present?
   end
 end
