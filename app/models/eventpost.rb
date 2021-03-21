@@ -10,24 +10,16 @@ class Eventpost < ApplicationRecord
   validates :image,   presence: { message: :require_eventpost_image },
                       content_type: { in: %w[image/jpeg image/gif image/png],
                                       message: :invalid_eventpost_image },
-                      size:         { less_than: 5.megabytes,
-                                      message: :invalid_eventpost_image_size }
+                      size: { less_than: 5.megabytes,
+                              message: :invalid_eventpost_image_size }
   validate :date_before_today
-
-  def event_json
-    as_json(only: %i[content event_name event_date created_at])
-  end
 
   def date_before_today
     errors.add(:event_date, :invalid_event_date) if
-    event_date.present? && event_date < Date.today
+    event_date.present? && event_date < Time.zone.today
   end
 
   def image_url
     image.attached? ? url_for(image) : nil
-  end
-
-  def image_present
-    image.present?
   end
 end

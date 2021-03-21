@@ -429,12 +429,15 @@ RSpec.describe User, type: :model do
         end
       end
     end
-    #　ユーザーが削除されるとイベントも削除されること。
+    # 　ユーザーが削除されるとイベントも削除されること。
+
     describe 'associated eventposts' do
       let(:user) { create(:user) }
+
       before do
         create(:eventpost, :default, user: user)
       end
+
       it 'dependent destroy' do
         expect do
           user.destroy

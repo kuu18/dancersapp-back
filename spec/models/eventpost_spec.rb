@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Eventpost, type: :model do
   describe Eventpost do
     let(:user) { create(:user) }
-    let(:eventpost) { build(:eventpost, :default, user: user) } 
+    let(:eventpost) { build(:eventpost, :default, user: user) }
 
     # user_idのvalidationテスト
 
@@ -124,7 +124,7 @@ RSpec.describe Eventpost, type: :model do
       # event_dateが存在する場合は有効であること
       context 'when present' do
         it 'is valid ' do
-          eventpost.event_date = Time.current.since(3.month)
+          eventpost.event_date = Time.current.since(3.months)
           expect(eventpost).to be_valid
         end
       end
@@ -150,7 +150,7 @@ RSpec.describe Eventpost, type: :model do
           expect(eventpost.errors.full_messages).to include(required_msg)
         end
       end
-      #　イベント日が今日以前の場合、無効なこと
+      # 　イベント日が今日以前の場合、無効なこと
 
       context 'when event_date before today' do
         it 'is invalid' do
@@ -160,33 +160,38 @@ RSpec.describe Eventpost, type: :model do
         end
       end
     end
-    #　イベント日が近い順に並んでいること
-    
+    # 　イベント日が近い順に並んでいること
+
     describe 'eventpost order' do
       let(:most_recent) { create(:eventpost, :most_recent) }
+
       before do
         create(:eventpost, :default, :most_old)
       end
+
       it 'order should be most recent event_date first' do
-        expect(most_recent).to eq(Eventpost.first)
+        expect(most_recent).to eq(described_class.first)
       end
     end
 
-    #　画像のバリデーションテスト
+    # 　画像のバリデーションテスト
 
     describe 'image validation' do
       context 'when image is present' do
         before do
-          eventpost.image = fixture_file_upload("/test_image.jpeg")
+          eventpost.image = fixture_file_upload('/test_image.jpeg')
         end
+
         it 'is valid ' do
           expect(eventpost).to be_valid
         end
       end
+
       context 'when image is nil' do
         before do
           eventpost.image.attach(nil)
         end
+
         it 'is invalid' do
           expect(eventpost).to be_invalid
           expect(eventpost.errors.full_messages).to include('画像を選択してください')

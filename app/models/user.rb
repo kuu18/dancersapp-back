@@ -50,7 +50,7 @@ class User < ApplicationRecord
   end
 
   def feed
-    Eventpost.where("user_id = ?", id)
+    Eventpost.where('user_id = ?', id)
   end
 
   private
