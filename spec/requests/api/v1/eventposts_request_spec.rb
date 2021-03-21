@@ -13,20 +13,20 @@ RSpec.describe "Api::V1::Eventposts", type: :request do
                                    event_date: Time.current.since(1.month))
       end
       it 'response 200' do
-        post '/api/v1/eventposts', params: { eventpost: eventpost_params }
+        post '/api/v1/eventposts', params: eventpost_params
         expect(response.status).to eq 200
       end
       it 'adds a eventpost' do
         expect do
-          post '/api/v1/eventposts', params: { eventpost: eventpost_params }
+          post '/api/v1/eventposts', params: eventpost_params
         end.to change(Eventpost, :count).by(1)
       end
       it 'response correct msg' do
-        post '/api/v1/eventposts', params: { eventpost: eventpost_params }
+        post '/api/v1/eventposts', params: eventpost_params
         expect(response_body['msg']).to include 'イベントを作成しました'
       end
       it 'response correct type' do
-        post '/api/v1/eventposts', params: { eventpost: eventpost_params }
+        post '/api/v1/eventposts', params: eventpost_params
         expect(response_body['type']).to eq 'success'
       end
     end
@@ -37,7 +37,7 @@ RSpec.describe "Api::V1::Eventposts", type: :request do
                                    event_date: '')
       end
       before do
-        post '/api/v1/eventposts', params: { eventpost: invalid_eventpost_params }
+        post '/api/v1/eventposts', params: invalid_eventpost_params
       end
       it 'response 200' do
         expect(response.status).to eq 200

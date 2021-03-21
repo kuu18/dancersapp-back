@@ -4,12 +4,13 @@ class Api::V1::EventpostsController < ApplicationController
 
   def index
     feed_items = current_user.feed
-    payload = feed_items.as_json(include: {user: { only:[:id, :name, :user_name, :email] } })
+    payload = feed_items.as_json(methods: 'image_url', include: {user: { only:[:id, :name, :user_name, :email] } })
     render json: payload
   end
 
   def create
     @eventpost = current_user.eventposts.build(eventpost_params)
+    @eventpost.image.attach(params[:image])
     if @eventpost.save
       payload = {
         type: 'success',
@@ -35,7 +36,7 @@ class Api::V1::EventpostsController < ApplicationController
 
   private
     def eventpost_params
-      params.require(:eventpost).permit(:content, :event_name, :event_date)
+      params.permit(:content, :event_name, :event_date, :image)
     end
 
     def correct_user
