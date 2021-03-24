@@ -444,5 +444,35 @@ RSpec.describe User, type: :model do
         end.to change(Eventpost, :count).by(-1)
       end
     end
+
+    #　フォローメソッドのテスト
+
+    describe 'follow and unfollow' do
+      let(:user) { create(:user) }
+      let(:other_user) { create(:other_user) }
+      #　何もしていない状態でフォローしていないこと
+      it 'not following other_user' do
+        expect(user.following?(other_user)).to be_falsey
+      end
+
+      context 'when user follow and unfollw other_user' do
+        before do
+          user.follow(other_user)
+        end
+        #　フォローした時フォローしていること
+        it 'following other_user' do
+          expect(user.following?(other_user)).to be_truthy
+        end
+        #　フォロワーに含まれていること
+        it 'include user to other_user followers' do
+          expect(other_user.followers.include?(user)).to be_truthy
+        end
+        #　フォロー解除した時フォローしていないこと
+        it 'not following other_user' do
+          user.unfollow(other_user)
+          expect(user.following?(other_user)). to be_falsey
+        end
+      end
+    end
   end
 end
