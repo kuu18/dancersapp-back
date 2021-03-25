@@ -18,6 +18,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 # Use Active Storage variant
 gem 'active_storage_validations'
+gem 'aws-sdk-rails', '~> 3'
 gem 'aws-sdk-s3',              '1.46.0', require: false
 # gem 'image_processing', '~> 1.2'
 
