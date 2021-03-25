@@ -1,4 +1,5 @@
 class UserMailer < ApplicationMailer
+  default from: 'dancersapp.work <noreply@dancersapp.work>'
   before_action :set_variables
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:

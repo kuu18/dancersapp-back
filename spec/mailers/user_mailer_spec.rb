@@ -16,7 +16,7 @@ RSpec.describe UserMailer, type: :mailer do
       end
 
       it 'from eq noreply@example.com' do
-        expect(mail.from).to eq(['noreply@example.com'])
+        expect(mail.from).to eq(["no-reply@dancersapp.work"])
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe UserMailer, type: :mailer do
       end
 
       it 'from eq noreply@example.com' do
-        expect(mail.from).to eq(['noreply@example.com'])
+        expect(mail.from).to eq(["no-reply@dancersapp.work"])
       end
     end
 
