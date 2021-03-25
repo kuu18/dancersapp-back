@@ -35,3 +35,8 @@
 /.local/*
 
 /.cache/*
+
+/.irb_history
+/.mysql_history
+
+/.viminfo
