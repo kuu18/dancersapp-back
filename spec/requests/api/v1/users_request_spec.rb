@@ -2,6 +2,28 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Users', type: :request do
   describe 'UserAPI' do
+    describe 'GET /api/v1/users' do
+      let(:user) { create(:user) }
+      let(:other_user) { create(:other_user) }
+
+      before do
+        logged_in(user)
+        get '/api/v1/users', params: { user_name: other_user.user_name }
+      end
+
+      it 'is resonse 200' do
+        expect(response.status).to eq(200)
+      end
+
+      it 'is correct response user' do
+        expect(other_user.my_json).to eq response_body['other_user']
+      end
+
+      it 'is correct response following?' do
+        expect(user.following?(other_user)).to eq response_body['relationship']
+      end
+    end
+
     describe 'POST /api/v1/users' do
       context 'when valid request' do
         before do

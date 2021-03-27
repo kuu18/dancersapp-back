@@ -3,7 +3,7 @@ class Api::V1::UsersController < ApplicationController
 
   def index
     user = User.find_by(user_name: params[:user_name])
-    render json: user.my_json
+    render json: { other_user: user.my_json, relationship: current_user.following?(user) }
   end
 
   def create

@@ -429,48 +429,99 @@ RSpec.describe User, type: :model do
         end
       end
     end
-    # 　ユーザーが削除されるとイベントも削除されること。
 
-    describe 'associated eventposts' do
+    describe 'associated eventposts relationship' do
       let(:user) { create(:user) }
+      let(:other_user) { create(:other_user) }
 
       before do
         create(:eventpost, :default, user: user)
+        user.follow(other_user)
       end
 
-      it 'dependent destroy' do
+      # 　ユーザーが削除されるとイベントも削除されること。
+      it 'dependent destroy eventposts' do
         expect do
           user.destroy
         end.to change(Eventpost, :count).by(-1)
       end
+
+      # 　ユーザーが削除されるとフォロー解除されていること。
+      it 'dependent destroy follow' do
+        user.destroy
+        expect(other_user.followers).not_to include(user)
+      end
+
+      # 　other_userが削除されるとフォロー解除されていること。
+      it 'dependent destroy follower' do
+        other_user.destroy
+        expect(user).not_to be_following(other_user)
+      end
     end
 
-    #　フォローメソッドのテスト
+    # 　フォローメソッドのテスト
 
     describe 'follow and unfollow' do
       let(:user) { create(:user) }
       let(:other_user) { create(:other_user) }
-      #　何もしていない状態でフォローしていないこと
+      # 　何もしていない状態でフォローしていないこと
+
       it 'not following other_user' do
-        expect(user.following?(other_user)).to be_falsey
+        expect(user).not_to be_following(other_user)
       end
 
       context 'when user follow and unfollw other_user' do
         before do
           user.follow(other_user)
         end
-        #　フォローした時フォローしていること
+        # 　フォローした時フォローしていること
+
         it 'following other_user' do
-          expect(user.following?(other_user)).to be_truthy
+          expect(user).to be_following(other_user)
         end
-        #　フォロワーに含まれていること
+        # 　フォロワーに含まれていること
+
         it 'include user to other_user followers' do
-          expect(other_user.followers.include?(user)).to be_truthy
+          expect(other_user.followers).to include(user)
         end
-        #　フォロー解除した時フォローしていないこと
+        # 　フォロー解除した時フォローしていないこと
+
         it 'not following other_user' do
           user.unfollow(other_user)
-          expect(user.following?(other_user)). to be_falsey
+          expect(user).not_to be_following(other_user)
+        end
+      end
+    end
+
+    describe 'feed test' do
+      let(:user) { create(:user) }
+      let(:other_user) { create(:other_user) }
+      let(:michael) { create(:michael) }
+
+      context 'when user followed other_user not followed michael' do
+        before do
+          user.follow(other_user)
+        end
+        # other_userのイベントを含んでいること
+
+        it 'feed includes other_user_event' do
+          other_user.eventposts.each do |event_following|
+            expect(user.feed).to include event_following
+          end
+        end
+        # 　userのイベントを含んでいること
+
+        it 'feed includes user_event' do
+          user.eventposts.each do |event_self|
+            expect(user.feed).to include event_self
+          end
+        end
+        # 　michaelのイベントを含んでいないこと
+
+        it 'feed not include michael_event' do
+          user.eventposts.each do |event_unfollowed|
+            expect(michael.feed).not_to include event_unfollowed
+          end
         end
       end
     end
