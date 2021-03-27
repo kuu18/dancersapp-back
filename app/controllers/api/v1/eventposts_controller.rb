@@ -9,14 +9,13 @@ class Api::V1::EventpostsController < ApplicationController
   end
 
   def show
-    if user = User.find_by(user_name: params[:user_name])
-      eventposts = user.eventposts
-      payload = eventposts.as_json(methods: 'image_url', include: { user: { only: %i[id name user_name email] } })
-    else
-      eventposts = current_user.eventposts
-      payload = eventposts.as_json(methods: 'image_url', include: { user: { only: %i[id name user_name email] } })
-    end
-    render json: payload
+    user = User.find_by(user_name: params[:user_name])
+    eventposts = if user
+                   user.eventposts
+                 else
+                   current_user.eventposts
+                 end
+    render json: eventposts.as_json(methods: 'image_url', include: { user: { only: %i[id name user_name email] } })
   end
 
   def create
