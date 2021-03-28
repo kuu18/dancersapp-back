@@ -52,7 +52,8 @@ class User < ApplicationRecord
   def my_json
     as_json(only: %i[id name user_name email created_at],
             include: { active_relationships: { only: %i[follower_id followed_id] },
-                       passive_relationships: { only: %i[follower_id followed_id] } })
+                       passive_relationships: { only: %i[follower_id followed_id] },
+                       eventposts: { only: %i[id] } })
   end
 
   def send_email_for(mailer)
