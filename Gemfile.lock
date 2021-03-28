@@ -128,6 +128,18 @@ GEM
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
     jwt (2.2.2)
+    kaminari (1.2.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.1)
+      kaminari-activerecord (= 1.2.1)
+      kaminari-core (= 1.2.1)
+    kaminari-actionview (1.2.1)
+      actionview
+      kaminari-core (= 1.2.1)
+    kaminari-activerecord (1.2.1)
+      activerecord
+      kaminari-core (= 1.2.1)
+    kaminari-core (1.2.1)
     listen (3.4.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -281,6 +293,7 @@ DEPENDENCIES
   hirb (~> 0.7.3)
   hirb-unicode-steakknife (~> 0.0.9)
   jwt (~> 2.2)
+  kaminari
   listen (~> 3.2)
   mysql2 (>= 0.4.4)
   pry-byebug (~> 3.9)

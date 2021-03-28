@@ -1,4 +1,4 @@
-10.times do |n|
+99.times do |n|
   name = "user#{n}"
   email = "#{name}@example.com"
   user_name = "#{name}user_name"
@@ -14,8 +14,8 @@ end
 
 users = User.all
 user  = users.first
-following = users[2..10]
-followers = users[3..10]
+following = users[2..50]
+followers = users[3..70]
 following.each { |followed| user.follow(followed) }
 followers.each { |follower| follower.follow(user) }
 

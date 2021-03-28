@@ -1,5 +1,5 @@
-10.times do
-  User.limit(10).each do |user|
+50.times do
+  User.limit(5).each do |user|
     eventpost = user.eventposts.build(
       content: Faker::Lorem.paragraph(sentence_count: 3),
       event_name: Faker::FunnyName.name,
