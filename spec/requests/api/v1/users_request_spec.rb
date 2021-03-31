@@ -348,10 +348,9 @@ RSpec.describe 'Api::V1::Users', type: :request do
     end
 
     describe 'DELETE /api/v1/users' do
-      let(:user) { create(:user, password: 'password') }
+      let(:user) { create(:user, password: 'password', activated: true) }
 
       before do
-        create(:eventpost, :default, user: user)
         logged_in(user)
       end
 
@@ -381,13 +380,6 @@ RSpec.describe 'Api::V1::Users', type: :request do
           expect do
             delete '/api/v1/users', params: { user: { password: 'password' } }
           end.to change(User, :count).by(-1)
-        end
-        # 　イベントが削除されていること
-
-        it 'delete eventpost' do
-          expect do
-            delete '/api/v1/users', params: { user: { password: 'password' } }
-          end.to change(Eventpost, :count).by(-1)
         end
       end
       # 　パスワードの認証に失敗した時
