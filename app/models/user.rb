@@ -1,6 +1,8 @@
 require 'validator/email_validator'
 class User < ApplicationRecord
   include UserAuth::Tokenizable
+  include Rails.application.routes.url_helpers
+  has_one_attached :avatar
   has_many :eventposts, dependent: :destroy
   has_many :active_relationships, inverse_of: :follower,
                                   class_name: 'Relationship',
@@ -50,10 +52,15 @@ class User < ApplicationRecord
   end
 
   def my_json
-    as_json(only: %i[id name user_name email created_at],
+    as_json(methods: 'avatar_url',
+            only: %i[id name user_name email created_at],
             include: { active_relationships: { only: %i[follower_id followed_id] },
                        passive_relationships: { only: %i[follower_id followed_id] },
                        eventposts: { only: %i[id] } })
+  end
+
+  def avatar_url
+    avatar.attached? ? url_for(avatar) : nil
   end
 
   def send_email_for(mailer)

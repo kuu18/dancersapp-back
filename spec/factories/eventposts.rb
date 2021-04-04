@@ -22,7 +22,7 @@ FactoryBot.define do
     end
 
     after(:build) do |eventpost|
-      eventpost.image.attach(io: File.open('spec/fixtures/test_image.jpeg'), filename: 'test_image.jpeg',
+      eventpost.image.attach(io: File.open('spec/fixtures/eventpost/test_image.jpeg'), filename: 'test_image.jpeg',
                              content_type: 'image/jpeg')
     end
   end

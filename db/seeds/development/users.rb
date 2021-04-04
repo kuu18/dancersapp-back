@@ -8,6 +8,8 @@
      user.name = name
      user.user_name = user_name
      user.password = "password"
+     user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'default_image.png',
+      content_type: 'image/png')
      user.save!
    end
 end

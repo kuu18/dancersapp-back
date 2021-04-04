@@ -8,20 +8,22 @@ class Api::V1::UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
+    @user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'default_image.png',
+      content_type: 'image/png')
     if @user.save
       @user.send_email_for(:account_activation)
-      type = 'info'
-      msg = '認証メールを送信しました。' \
+      payload = {
+        type: 'info',
+        msg: '認証メールを送信しました。' \
             '２時間以内にメール認証を完了してください'
+      }
     else
-      type = 'error'
-      errors = @user.errors.full_messages
+      payload = {
+        type:'error',
+        errors: @user.errors.full_messages
+      }
     end
-    render json: {
-      type: type,
-      msg: msg,
-      errors: errors
-    }
+    render json: payload
   end
 
   def show
@@ -105,14 +107,33 @@ class Api::V1::UsersController < ApplicationController
 
   def following
     user  = User.find_by(user_name: params[:user_name])
-    users = user.following
+    users = user.following.as_json(methods: 'avatar_url', only: %i[id name user_name])
     render json: users
   end
 
   def followers
     user  = User.find_by(user_name: params[:user_name])
-    users = user.followers
+    users = user.followers.as_json(methods: 'avatar_url', only: %i[id name user_name])
     render json: users
+  end
+
+  def avatar
+    current_user.avatar.attach(params[:avatar])
+    payload = {
+      type: 'success',
+      msg: 'プロフィール画像を変更しました'
+    }
+    render json: payload
+  end
+
+  def avatar_destroy
+    current_user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'initial_image.png',
+    content_type: 'image/png')
+    payload = {
+      type: 'success',
+      msg: 'プロフィール画像を削除しました'
+    }
+    render json: payload
   end
 
   private
