@@ -5,7 +5,7 @@
       event_name: Faker::FunnyName.name,
       event_date: Faker::Time.forward(days: 100).floor_to(15.minutes)
       )
-    eventpost.image.attach(io: File.open('spec/fixtures/test_image.jpeg'), filename: 'test_image.jpeg',
+    eventpost.image.attach(io: File.open('spec/fixtures/eventpost/test_image.jpeg'), filename: 'test_image.jpeg',
       content_type: 'image/jpeg')
     eventpost.save!
   end

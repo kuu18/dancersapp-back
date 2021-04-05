@@ -7,6 +7,8 @@ Rails.application.routes.draw do
         patch :update_profile, action: :update, on: :collection
         patch :chenge_email, action: :change_email, on: :collection
         patch :chenge_password, action: :change_password, on: :collection
+        patch :avatar, action: :avatar, on: :collection
+        patch :avatar_destroy, action: :avatar_destroy, on: :collection
         collection do
           get :following, :followers
         end

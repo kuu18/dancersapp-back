@@ -179,7 +179,7 @@ RSpec.describe Eventpost, type: :model do
     describe 'image validation' do
       context 'when image is present' do
         before do
-          eventpost.image = fixture_file_upload('/test_image.jpeg')
+          eventpost.image = fixture_file_upload('/eventpost/test_image.jpeg')
         end
 
         it 'is valid ' do
