@@ -16,24 +16,11 @@ RSpec.describe User, type: :model do
       end
       # nameが空の場合は無効であること
 
-      context 'when name is empty' do
-        required_msg = '名前を入力してください'
-        it 'is invalid when " "' do
-          user.name = '  '
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          user.name = ''
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
+      context 'when name is nil' do
+        it 'is invalid' do
           user.name = nil
           expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
+          expect(user.errors.full_messages).to include('名前を入力してください')
         end
       end
       # nameが50文字以下の場合は有効であること
@@ -66,24 +53,11 @@ RSpec.describe User, type: :model do
       end
       # user_nameが空の場合は無効であること
 
-      context 'when user_name is empty' do
-        required_msg = 'ユーザーネームを入力してください'
-        it 'is invalid when " "' do
-          user.user_name = '  '
-          user.valid?
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          user.user_name = ''
-          user.valid?
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
+      context 'when user_name is nil' do
+        it 'is invalid' do
           user.user_name = nil
           user.valid?
-          expect(user.errors.full_messages).to include(required_msg)
+          expect(user.errors.full_messages).to include('ユーザーネームを入力してください')
         end
       end
 
@@ -189,32 +163,19 @@ RSpec.describe User, type: :model do
 
     describe 'email validation' do
       # emailが存在する場合は有効であること
-      context 'when present' do
-        it 'is invalid' do
+      context 'when email is present' do
+        it 'is valid' do
           user.email = 'test@example.com'
           expect(user).to be_valid
         end
       end
       # emailが空の場合は無効であること
 
-      context 'when empty' do
-        required_msg = 'メールアドレスを入力してください'
-        it 'is invalid when " "' do
-          user.email = ' '
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          user.email = ''
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
+      context 'when email is nil' do
+        it 'is invalid' do
           user.email = nil
           expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
+          expect(user.errors.full_messages).to include('メールアドレスを入力してください')
         end
       end
       # emailが255文字以下の場合は有効であること
@@ -278,13 +239,20 @@ RSpec.describe User, type: :model do
           end
         end
       end
+      # emailが小文字で保存されていること
+
+      it 'is saved in lowercase' do
+        user.email = 'TEST@EXAMPLE.COM'
+        user.save
+        expect(user.reload.email).to eq 'test@example.com'
+      end
     end
 
     describe 'activated validation' do
       # アクティブユーザーがいない場合、同一のemailが登録できていること
 
       context 'when activated false' do
-        it 'allow not uniquness email' do
+        it 'allow same email' do
           FactoryBot.create(:user, email: 'test@example.com', activated: false)
           other_user = FactoryBot.build(:other_user, email: 'test@example.com')
           other_user.save
@@ -306,31 +274,6 @@ RSpec.describe User, type: :model do
           expect(other_user.errors.full_messages).to include('メールアドレスはすでに存在します')
         end
       end
-
-      # アクティブユーザーがいなくなった場合、ユーザーは保存できているか
-
-      context 'when active_user destroy' do
-        let(:email) { 'test@example.com' }
-
-        before do
-          user = FactoryBot.create(:user, email: email, activated: true)
-          user.destroy!
-        end
-
-        it 'is valid and success save' do
-          other_user = FactoryBot.build(:other_user, email: email)
-          other_user.save
-          expect(other_user).to be_valid
-        end
-      end
-
-      # emailが小文字で保存されていること
-
-      it 'is saved in lowercase' do
-        user.email = 'TEST@EXAMPLE.COM'
-        user.save
-        expect(user.reload.email).to eq 'test@example.com'
-      end
     end
 
     describe 'password validation' do
@@ -343,24 +286,11 @@ RSpec.describe User, type: :model do
       end
       # passwordが空の場合は無効であること
 
-      context 'when empty' do
-        required_msg = 'パスワードを入力してください'
-        it 'is invalid when " "' do
-          user = build(:user, password: ' ', password_confirmation: ' ')
+      context 'when password is nil' do
+        it 'is invalid' do
+          user = build(:user, password: nil)
           expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          user = build(:user, password: '', password_confirmation: '')
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
-          user = build(:user, password: nil, password_confirmation: nil)
-          expect(user).to be_invalid
-          expect(user.errors.full_messages).to include(required_msg)
+          expect(user.errors.full_messages).to include('パスワードを入力してください')
         end
       end
       # passwordが8文字より短い場合は無効であること
@@ -429,14 +359,16 @@ RSpec.describe User, type: :model do
         end
       end
     end
+    #　userモデルの関連付けのテスト
 
-    describe 'associated eventposts relationship' do
+    describe 'associated eventposts relationship like' do
       let(:user) { create(:user) }
       let(:other_user) { create(:other_user) }
+      let(:eventpost) { create(:eventpost, user: user) }
 
       before do
-        create(:eventpost, :default, user: user)
         user.follow(other_user)
+        user.likes.create(eventpost_id: eventpost.id)
       end
 
       # 　ユーザーが削除されるとイベントも削除されること。
@@ -456,6 +388,13 @@ RSpec.describe User, type: :model do
       it 'dependent destroy follower' do
         other_user.destroy
         expect(user).not_to be_following(other_user)
+      end
+
+      #　ユーザーが削除されるといいねが削除されること
+      it 'dependent destroy like' do
+        expect do
+          user.destroy
+        end.to change(Like, :count).by(-1)
       end
     end
 
@@ -519,8 +458,8 @@ RSpec.describe User, type: :model do
         # 　michaelのイベントを含んでいないこと
 
         it 'feed not include michael_event' do
-          user.eventposts.each do |event_unfollowed|
-            expect(michael.feed).not_to include event_unfollowed
+          michael.eventposts.each do |event_unfollowed|
+            expect(user.feed).not_to include event_unfollowed
           end
         end
       end

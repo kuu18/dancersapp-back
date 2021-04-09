@@ -9,8 +9,7 @@ class Eventpost < ApplicationRecord
   validates :content, presence: true, length: { maximum: 140 }
   validates :event_name, presence: true, length: { maximum: 50 }
   validates :event_date, presence: true
-  validates :image,   presence: { message: :require_eventpost_image },
-                      content_type: { in: %w[image/jpeg image/gif image/png],
+  validates :image,  content_type: { in: %w[image/jpeg image/gif image/png],
                                       message: :invalid_eventpost_image },
                       size: { less_than: 5.megabytes,
                               message: :invalid_eventpost_image_size }

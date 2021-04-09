@@ -1,29 +1,30 @@
 FactoryBot.define do
   factory :eventpost do
-    trait :default do
-      content { 'MyEventContent' }
-      event_name { 'MyEvent' }
+    content { 'MyEventContent' }
+    event_name { 'MyEvent' }
+    event_date { Time.zone.now }
+    user { nil }
+  end
+  factory :time_eventpost, class: 'Eventpost' do
+    trait :middle do
+      content { 'MiddleContent' }
+      event_name { 'MiddleEvent' }
       event_date { Time.current.since(3.months) }
-      association :user, factory: :user
+      user { nil }
     end
 
     trait :most_recent do
       content { 'MostRecentContent' }
       event_name { 'MostRecent' }
       event_date { Time.current.since(1.month) }
-      association :user, factory: :user
+      user { nil }
     end
 
     trait :most_old do
       content { 'MostOldContent' }
       event_name { 'MostOld' }
       event_date { Time.current.since(1.year) }
-      association :user, factory: :user
-    end
-
-    after(:build) do |eventpost|
-      eventpost.image.attach(io: File.open('spec/fixtures/eventpost/test_image.jpeg'), filename: 'test_image.jpeg',
-                             content_type: 'image/jpeg')
+      user { nil }
     end
   end
 end
