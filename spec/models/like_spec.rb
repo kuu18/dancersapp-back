@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Like, type: :model do
   let(:user) { create(:user) }
-  let(:eventpost) { create(:eventpost, :default, user: user) }
+  let(:eventpost) { create(:eventpost, user: user) }
 
   describe 'like create' do
     it 'success create' do

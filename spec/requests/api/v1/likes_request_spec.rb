@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Likes', type: :request do
   let(:user) { create(:user) }
-  let(:eventpost) { create(:eventpost, :default, user: user) }
+  let(:eventpost) { create(:eventpost, user: user) }
 
   before do
     logged_in(user)

@@ -72,7 +72,7 @@ RSpec.describe 'Api::V1::Eventposts', type: :request do
 
       before do
         logged_in(user)
-        create(:eventpost, :default, id: 1, user: user)
+        create(:eventpost, id: 1, user: user)
       end
 
       it 'response 200' do
@@ -103,7 +103,7 @@ RSpec.describe 'Api::V1::Eventposts', type: :request do
 
       before do
         logged_in(other_user)
-        create(:eventpost, :default, id: 1, user: user)
+        create(:eventpost, id: 1, user: user)
       end
 
       it 'response 404' do

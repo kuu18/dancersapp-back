@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Eventpost, type: :model do
   describe Eventpost do
     let(:user) { create(:user) }
-    let(:eventpost) { build(:eventpost, :default, user: user) }
+    let(:eventpost) { build(:eventpost, user: user) }
 
     # user_idのvalidationテスト
 
@@ -17,17 +17,7 @@ RSpec.describe Eventpost, type: :model do
       end
       # user_idが空の場合は無効であること
 
-      context 'when eventpost is empty' do
-        it 'is invalid when " "' do
-          eventpost.user_id = '  '
-          expect(eventpost).to be_invalid
-        end
-
-        it 'is invalid when ""' do
-          eventpost.user_id = ''
-          expect(eventpost).to be_invalid
-        end
-
+      context 'when eventpost is nil' do
         it 'is invalid when nil' do
           eventpost.user_id = nil
           expect(eventpost).to be_invalid
@@ -46,24 +36,11 @@ RSpec.describe Eventpost, type: :model do
       end
       # contentが空の場合は無効であること
 
-      context 'when content is empty' do
-        required_msg = 'イベント概要を入力してください'
-        it 'is invalid when " "' do
-          eventpost.content = '  '
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          eventpost.content = ''
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
+      context 'when content is nil' do
+        it 'is invalid' do
           eventpost.content = nil
           expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
+          expect(eventpost.errors.full_messages).to include('イベント概要を入力してください')
         end
       end
       # contentが140文字より長い場合は無効であること
@@ -88,24 +65,11 @@ RSpec.describe Eventpost, type: :model do
       end
       # event_nameが空の場合は無効であること
 
-      context 'when event_name is empty' do
-        required_msg = 'イベント名を入力してください'
-        it 'is invalid when " "' do
+      context 'when event_name is nil' do
+        it 'is invalid' do
           eventpost.event_name = '  '
           expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          eventpost.event_name = ''
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when nil' do
-          eventpost.event_name = nil
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
+          expect(eventpost.errors.full_messages).to include('イベント名を入力してください')
         end
       end
       # event_nameが50文字より長い場合は無効であること
@@ -130,24 +94,11 @@ RSpec.describe Eventpost, type: :model do
       end
       # event_dateが空の場合は無効であること
 
-      context 'when event_date is empty' do
-        required_msg = 'イベント日を入力してください'
-        it 'is invalid when " "' do
-          eventpost.event_date = '  '
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
-        it 'is invalid when ""' do
-          eventpost.event_date = ''
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
-        end
-
+      context 'when event_date is nil' do
         it 'is invalid when nil' do
           eventpost.event_date = nil
           expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include(required_msg)
+          expect(eventpost.errors.full_messages).to include('イベント日を入力してください')
         end
       end
       # 　イベント日が今日以前の場合、無効なこと
@@ -163,10 +114,10 @@ RSpec.describe Eventpost, type: :model do
     # 　イベント日が近い順に並んでいること
 
     describe 'eventpost order' do
-      let(:most_recent) { create(:eventpost, :most_recent) }
+      let(:most_recent) { create(:time_eventpost, :most_recent, user: user) }
 
       before do
-        create(:eventpost, :default, :most_old)
+        create(:time_eventpost, :middle, :most_old, user: user)
       end
 
       it 'order should be most recent event_date first' do
@@ -174,28 +125,37 @@ RSpec.describe Eventpost, type: :model do
       end
     end
 
-    # 　画像のバリデーションテスト
+    #画像が添付できること
+    describe 'attacth image' do
 
-    describe 'image validation' do
-      context 'when image is present' do
+      context 'when image is attached' do
         before do
-          eventpost.image = fixture_file_upload('/eventpost/test_image.jpeg')
+          eventpost.image.attach(io: File.open('spec/fixtures/eventpost/test_image.jpeg'), filename: 'test_image.jpeg',
+                            content_type: 'image/jpeg')
         end
-
-        it 'is valid ' do
-          expect(eventpost).to be_valid
+        it 'is be trusey' do
+          expect(eventpost.image.attached?).to be_truthy
         end
       end
-
-      context 'when image is nil' do
-        before do
-          eventpost.image.attach(nil)
+      context 'when image is not attached' do
+        it 'is be falsey' do
+          expect(eventpost.image.attached?).to be_falsey
         end
+      end
+    end
 
-        it 'is invalid' do
-          expect(eventpost).to be_invalid
-          expect(eventpost.errors.full_messages).to include('画像を選択してください')
-        end
+    #　イベントの関連付けテスト
+    describe 'associated like' do
+      let(:user) { create(:user) }
+      let(:eventpost) { create(:eventpost, user: user) }
+      before do
+        user.likes.create(eventpost_id: eventpost.id)
+      end
+       #　イベントが削除されるといいねが削除されること
+       it 'dependent destroy like' do
+        expect do
+          eventpost.destroy!
+        end.to change(Like, :count).by(-1)
       end
     end
   end
