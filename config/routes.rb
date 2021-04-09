@@ -24,6 +24,8 @@ Rails.application.routes.draw do
       patch '/password_resets', to: 'password_resets#update'
       resources :relationships, only: %i[create]
       delete '/relationships', to: 'relationships#destroy'
+      resources :likes, only: %i[create index]
+      delete '/likes', to: 'likes#destroy'
     end
   end
 end

@@ -9,7 +9,7 @@ class Api::V1::UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     @user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'default_image.png',
-      content_type: 'image/png')
+                        content_type: 'image/png')
     if @user.save
       @user.send_email_for(:account_activation)
       payload = {
@@ -19,7 +19,7 @@ class Api::V1::UsersController < ApplicationController
       }
     else
       payload = {
-        type:'error',
+        type: 'error',
         errors: @user.errors.full_messages
       }
     end
@@ -127,8 +127,8 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def avatar_destroy
-    current_user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'initial_image.png',
-    content_type: 'image/png')
+    current_user.avatar.attach(io: File.open('spec/fixtures/user/default_image.png'), filename: 'default_image.png',
+                               content_type: 'image/png')
     payload = {
       type: 'success',
       msg: 'プロフィール画像を削除しました'

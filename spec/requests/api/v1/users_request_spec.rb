@@ -411,6 +411,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
         end
       end
     end
+
     describe 'PATCH /api/v1/users/avatar' do
       let(:user) { create(:user) }
 
@@ -418,7 +419,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
         logged_in(user)
         patch '/api/v1/users/avatar', params: { avatar: fixture_file_upload('/user/default_image.png') }
       end
-       
+
       it 'response 200' do
         expect(response.status).to eq 200
       end
@@ -427,7 +428,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
         expect(response_body['msg']).to eq 'プロフィール画像を変更しました'
       end
 
-      it  'response correct type' do
+      it 'response correct type' do
         expect(response_body['type']).to eq 'success'
       end
     end
