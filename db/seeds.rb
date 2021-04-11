@@ -8,6 +8,8 @@
 table_names = %w(
   users
   eventposts
+  comments
+  likes
 )
 
 table_names.each do |table_name|

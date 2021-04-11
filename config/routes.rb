@@ -14,7 +14,8 @@ Rails.application.routes.draw do
         end
       end
       resources :eventposts, only: %i[index create destroy] do
-        get :current_user, action: :show, on: :collection
+        get :current_eventpost, action: :show, on: :collection
+        get :user_eventposts, action: :user_eventposts, on: :collection
       end
       delete '/users', to: 'users#destroy'
       resources :login, only: [:create]
@@ -26,6 +27,8 @@ Rails.application.routes.draw do
       delete '/relationships', to: 'relationships#destroy'
       resources :likes, only: %i[create index]
       delete '/likes', to: 'likes#destroy'
+      resources :comments, only: [:create]
+      delete '/comments', to: 'comments#destroy'
     end
   end
 end

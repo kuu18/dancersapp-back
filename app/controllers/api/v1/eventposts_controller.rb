@@ -5,12 +5,19 @@ class Api::V1::EventpostsController < ApplicationController
   def index
     feed_items = current_user.feed.page(params[:page]).per(5)
     pagenation = resources_with_pagination(feed_items)
-    @feed_items = feed_items.as_json(methods: 'image_url', include: { user: { only: %i[id name user_name email] } })
+    @feed_items = feed_items.as_json(methods: 'image_url',
+                                     include: [{ user: { only: %i[id name user_name email], methods: 'avatar_url' } },
+                                               { comments: { only: %i[id] } }])
     payload = { feed_items: @feed_items, kaminari: pagenation }
     render json: payload
   end
 
   def show
+    eventpost = Eventpost.find(params[:eventpost_id]).eventpost_json
+    render json: eventpost
+  end
+
+  def user_eventposts
     user = User.find_by(user_name: params[:user_name])
     eventposts = if user
                    user.eventposts.page(params[:page]).per(12)

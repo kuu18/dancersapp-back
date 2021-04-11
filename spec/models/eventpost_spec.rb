@@ -125,34 +125,37 @@ RSpec.describe Eventpost, type: :model do
       end
     end
 
-    #画像が添付できること
+    # 画像が添付できること
     describe 'attacth image' do
-
       context 'when image is attached' do
         before do
           eventpost.image.attach(io: File.open('spec/fixtures/eventpost/test_image.jpeg'), filename: 'test_image.jpeg',
-                            content_type: 'image/jpeg')
+                                 content_type: 'image/jpeg')
         end
+
         it 'is be trusey' do
-          expect(eventpost.image.attached?).to be_truthy
+          expect(eventpost.image).to be_attached
         end
       end
+
       context 'when image is not attached' do
         it 'is be falsey' do
-          expect(eventpost.image.attached?).to be_falsey
+          expect(eventpost.image).not_to be_attached
         end
       end
     end
 
-    #　イベントの関連付けテスト
+    # 　イベントの関連付けテスト
     describe 'associated like' do
       let(:user) { create(:user) }
       let(:eventpost) { create(:eventpost, user: user) }
+
       before do
         user.likes.create(eventpost_id: eventpost.id)
       end
-       #　イベントが削除されるといいねが削除されること
-       it 'dependent destroy like' do
+      # 　イベントが削除されるといいねが削除されること
+
+      it 'dependent destroy like' do
         expect do
           eventpost.destroy!
         end.to change(Like, :count).by(-1)
