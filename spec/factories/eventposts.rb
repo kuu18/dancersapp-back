@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :eventpost do
     content { 'MyEventContent' }
     event_name { 'MyEvent' }
-    event_date { Time.zone.now }
+    event_date { Time.current.since(1.week) }
     user { nil }
   end
   factory :time_eventpost, class: 'Eventpost' do
