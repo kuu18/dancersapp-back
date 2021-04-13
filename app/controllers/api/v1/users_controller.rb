@@ -107,14 +107,20 @@ class Api::V1::UsersController < ApplicationController
 
   def following
     user  = User.find_by(user_name: params[:user_name])
-    users = user.following.as_json(methods: 'avatar_url', only: %i[id name user_name])
-    render json: users
+    users = user.following.page(params[:page]).per(10)
+    pagenation = resources_with_pagination(users)
+    following = users.as_json(methods: 'avatar_url', only: %i[id name user_name])
+    payload = { following: following, kaminari: pagenation }
+    render json: payload
   end
 
   def followers
     user  = User.find_by(user_name: params[:user_name])
-    users = user.followers.as_json(methods: 'avatar_url', only: %i[id name user_name])
-    render json: users
+    users = user.followers.page(params[:page]).per(10)
+    pagenation = resources_with_pagination(users)
+    followers = users.as_json(methods: 'avatar_url', only: %i[id name user_name])
+    payload = { followers: followers, kaminari: pagenation }
+    render json: payload
   end
 
   def avatar
@@ -140,5 +146,18 @@ class Api::V1::UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :user_name, :email, :password)
+  end
+
+  def resources_with_pagination(resources)
+    {
+      pagenation: {
+        current: resources.current_page,
+        previous: resources.prev_page,
+        next: resources.next_page,
+        limit_value: resources.limit_value,
+        pages: resources.total_pages,
+        count: resources.total_count
+      }
+    }
   end
 end
