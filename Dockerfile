@@ -25,3 +25,7 @@ RUN apk update && \
     /tmp/* 
 
 ADD . ${HOME}
+
+CMD ["bundle", "exec",  "puma", "-C", "config/puma.rb"]
+
+EXPOSE ${CONTAINER_PORT}
