@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       delete '/likes', to: 'likes#destroy'
       resources :comments, only: [:create]
       delete '/comments', to: 'comments#destroy'
+      get :health_check, to: 'health_check#index'
     end
   end
 end
