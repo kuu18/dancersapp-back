@@ -5,7 +5,7 @@ class Api::V1::EventpostsController < ApplicationController
   def index
     feed_items = current_user.feed.page(params[:page]).per(5)
     pagenation = resources_with_pagination(feed_items)
-    @feed_items = feed_items.as_json(methods: 'image_url',
+    @feed_items = feed_items.as_json(methods: %w[image_url delete_expired_eventpost],
                                      include: [{ user: { only: %i[id name user_name email], methods: 'avatar_url' } },
                                                { comments: { only: %i[id] } }])
     payload = { feed_items: @feed_items, kaminari: pagenation }
@@ -34,6 +34,7 @@ class Api::V1::EventpostsController < ApplicationController
     @eventpost = current_user.eventposts.build(eventpost_params)
     @eventpost.image.attach(params[:image])
     payload = if @eventpost.save
+                current_user.schedules.create(eventpost_id: @eventpost.id)
                 {
                   type: 'success',
                   msg: 'イベントを作成しました'

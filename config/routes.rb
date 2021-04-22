@@ -29,6 +29,10 @@ Rails.application.routes.draw do
       delete '/likes', to: 'likes#destroy'
       resources :comments, only: [:create]
       delete '/comments', to: 'comments#destroy'
+      resources :schedules, only: %i[create index] do
+        get :my_schedules, action: :show, on: :collection
+      end
+      delete '/schedules', to: 'schedules#destroy'
       get :health_check, to: 'health_check#index'
     end
   end

@@ -361,7 +361,7 @@ RSpec.describe User, type: :model do
     end
     # 　userモデルの関連付けのテスト
 
-    describe 'associated eventposts relationship like comment' do
+    describe 'associated eventposts relationship like comment schedule' do
       let(:user) { create(:user) }
       let(:other_user) { create(:other_user) }
       let(:eventpost) { create(:eventpost, user: user) }
@@ -370,6 +370,7 @@ RSpec.describe User, type: :model do
         user.follow(other_user)
         user.likes.create(eventpost_id: eventpost.id)
         user.comments.create(eventpost_id: eventpost.id, content: 'Mycontent')
+        user.schedules.create(eventpost_id: eventpost.id)
       end
 
       # 　ユーザーが削除されるとイベントも削除されること。
@@ -403,6 +404,13 @@ RSpec.describe User, type: :model do
         expect do
           user.destroy
         end.to change(Comment, :count).by(-1)
+      end
+
+      # 　ユーザーが削除されるとスケジュールが削除されること
+      it 'dependent destroy schedule' do
+        expect do
+          user.destroy
+        end.to change(Schedule, :count).by(-1)
       end
     end
 
