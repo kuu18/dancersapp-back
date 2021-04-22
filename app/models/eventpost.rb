@@ -4,6 +4,8 @@ class Eventpost < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :liked_users, through: :likes, source: :user
   has_many :comments, dependent: :destroy
+  has_many :schedules, dependent: :destroy
+  has_many :scheduling_users, through: :schedules, source: :user
   has_one_attached :image
   default_scope -> { order(:event_date) }
   validates :user_id, presence: true
@@ -30,5 +32,9 @@ class Eventpost < ApplicationRecord
             include: [{ user: { only: %i[id name user_name email], methods: 'avatar_url' } },
                       { comments: { only: %i[id content],
                                     include: { user: { methods: 'avatar_url' } } } }])
+  end
+
+  def delete_expired_eventpost
+    destroy! if event_date < Time.zone.today
   end
 end

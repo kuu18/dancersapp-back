@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :liked_eventposts, through: :likes, source: :eventpost
   has_many :comments, dependent: :destroy
+  has_many :schedules, dependent: :destroy
+  has_many :scheduled_eventpost, through: :schedules, source: :eventpost
   before_validation :downcase_email
   validates :name, presence: true,
                    length: { maximum: 50, allow_blank: true }
@@ -59,7 +61,7 @@ class User < ApplicationRecord
             only: %i[id name user_name email created_at],
             include: { active_relationships: { only: %i[follower_id followed_id] },
                        passive_relationships: { only: %i[follower_id followed_id] },
-                       eventposts: { only: %i[id] } })
+                       eventposts: { only: %i[id], methods: 'delete_expired_eventpost' } })
   end
 
   def avatar_url

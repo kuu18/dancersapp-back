@@ -146,12 +146,14 @@ RSpec.describe Eventpost, type: :model do
     end
 
     # 　イベントの関連付けテスト
-    describe 'associated like' do
+    describe 'associated like comment schedule' do
       let(:user) { create(:user) }
       let(:eventpost) { create(:eventpost, user: user) }
 
       before do
         user.likes.create(eventpost_id: eventpost.id)
+        user.comments.create(eventpost_id: eventpost.id, content: 'Mycontent')
+        user.schedules.create(eventpost_id: eventpost.id)
       end
       # 　イベントが削除されるといいねが削除されること
 
@@ -159,6 +161,49 @@ RSpec.describe Eventpost, type: :model do
         expect do
           eventpost.destroy!
         end.to change(Like, :count).by(-1)
+      end
+      # 　イベントが削除されるとコメントが削除されること
+
+      it 'dependent destroy comment' do
+        expect do
+          eventpost.destroy!
+        end.to change(Comment, :count).by(-1)
+      end
+      # 　イベントが削除されるとスケジュールが削除されること
+
+      it 'dependent destroy schedule' do
+        expect do
+          eventpost.destroy!
+        end.to change(Schedule, :count).by(-1)
+      end
+    end
+
+    # delete_expired_eventpostメソッドのテスト
+    describe 'delete_expired_eventpost method' do
+      let(:today) { Time.zone.today }
+
+      context 'when event_date is before today' do
+        let(:eventpost) { build(:eventpost, user: user, event_date: today - 1) }
+
+        before do
+          eventpost.save(validate: false)
+        end
+
+        it 'destroy eventpost' do
+          expect do
+            eventpost.delete_expired_eventpost
+          end.to change(described_class, :count).by(-1)
+        end
+      end
+
+      context 'when event_date is after today' do
+        let(:eventpost) { create(:eventpost, user: user, event_date: today + 1) }
+
+        it 'not destroy eventpost' do
+          expect do
+            eventpost.delete_expired_eventpost
+          end.to change(described_class, :count).by(1)
+        end
       end
     end
   end
