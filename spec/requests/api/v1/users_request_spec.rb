@@ -196,7 +196,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
       end
     end
 
-    describe 'PATCH /api/v1/users/chenge_email' do
+    describe 'PATCH /api/v1/users/change_email' do
       let(:user) { create(:user, email: 'test@example.com', activated: true) }
 
       before do
@@ -207,7 +207,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       context 'when success change email' do
         before do
-          patch '/api/v1/users/chenge_email', params: { user: { email: 'change_email@example.com' } }
+          patch '/api/v1/users/change_email', params: { user: { email: 'change_email@example.com' } }
         end
         # 　レスポンス200が返ってくること
 
@@ -244,7 +244,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       context 'when failure change email' do
         before do
-          patch '/api/v1/users/chenge_email', params: { user: { email: 'test@example.com' } }
+          patch '/api/v1/users/change_email', params: { user: { email: 'test@example.com' } }
         end
         # レスポンス200が返ってくること
 
@@ -264,7 +264,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
       end
     end
 
-    describe 'PATCH /api/v1/users/chenge_password' do
+    describe 'PATCH /api/v1/users/change_password' do
       let(:user) { create(:user, password: 'password') }
 
       before do
@@ -274,7 +274,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       context 'when success change password' do
         before do
-          patch '/api/v1/users/chenge_password',
+          patch '/api/v1/users/change_password',
                 params: { user: { password: 'change_password', old_password: 'password' } }
         end
         # 　レスポンス200が返ってくること
@@ -304,7 +304,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       context 'when failure change password' do
         before do
-          patch '/api/v1/users/chenge_password', params: { user: { password: 'password', old_password: 'password' } }
+          patch '/api/v1/users/change_password', params: { user: { password: 'password', old_password: 'password' } }
         end
         # レスポンス200が返ってくること
 
@@ -326,7 +326,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       context 'when old_password is incorrect' do
         before do
-          patch '/api/v1/users/chenge_password',
+          patch '/api/v1/users/change_password',
                 params: { user: { password: 'change_password', old_password: 'incorrect_password' } }
         end
         # レスポンス200が返ってくること
@@ -430,6 +430,35 @@ RSpec.describe 'Api::V1::Users', type: :request do
 
       it 'response correct type' do
         expect(response_body['type']).to eq 'success'
+      end
+    end
+    # 　ユーザー検索のテスト
+
+    describe 'GET /api/v1/users/search' do
+      context 'when search name' do
+        let(:user) { create(:user, name: 'user0') }
+
+        before do
+          logged_in(user)
+          get '/api/v1/users/search', params: { name_cont: 'us' }
+        end
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
+      end
+
+      context 'when search user_name' do
+        let(:user) { create(:user, user_name: 'user0user_name') }
+
+        before do
+          logged_in(user)
+          get '/api/v1/users/search', params: { user_name_cont: 'user' }
+        end
+
+        it 'response 200' do
+          expect(response.status).to eq 200
+        end
       end
     end
   end

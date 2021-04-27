@@ -481,5 +481,44 @@ RSpec.describe User, type: :model do
         end
       end
     end
+    # 　user検索のテスト
+
+    describe 'users search' do
+      let(:user) { create(:user, name: 'user', user_name: 'user_name') }
+      let(:other_user) { create(:other_user, name: 'other_user', user_name: 'other_user_name') }
+      let(:michael) { create(:michael, name: 'Michael', user_name: 'michael_user_name') }
+
+      context 'when name search' do
+        let(:result) { described_class.ransack(name_cont: 'user').result }
+
+        it 'include user' do
+          expect(result).to include user
+        end
+
+        it 'include other_user' do
+          expect(result).to include other_user
+        end
+
+        it 'not include michael' do
+          expect(result).not_to include michael
+        end
+      end
+
+      context 'when user_name search' do
+        let(:result) { described_class.ransack(user_name_cont: 'michael').result }
+
+        it 'include user' do
+          expect(result).not_to include user
+        end
+
+        it 'include other_user' do
+          expect(result).not_to include other_user
+        end
+
+        it 'not include michael' do
+          expect(result).to include michael
+        end
+      end
+    end
   end
 end

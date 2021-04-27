@@ -57,10 +57,26 @@ class Api::V1::EventpostsController < ApplicationController
     render json: payload
   end
 
+  def search
+    q = Eventpost.ransack(search_params)
+    @eventposts = q.result(distinct: true).page(params[:page]).per(10)
+    pagenation = resources_with_pagination(@eventposts)
+    payload = {
+      eventposts: @eventposts.as_json(only: %i[id event_name event_date],
+                                      include: { user: { only: %i[name], methods: 'avatar_url' } }),
+      kaminari: pagenation
+    }
+    render json: payload
+  end
+
   private
 
   def eventpost_params
     params.permit(:content, :event_name, :event_date, :image)
+  end
+
+  def search_params
+    params.permit(:event_name_cont, :event_date_gteq, :event_date_lteq_end_of_day, :page)
   end
 
   def correct_user

@@ -5,17 +5,16 @@ Rails.application.routes.draw do
       resources :users, only: %i[index create] do
         get :current_user, action: :show, on: :collection
         patch :update_profile, action: :update, on: :collection
-        patch :chenge_email, action: :change_email, on: :collection
-        patch :chenge_password, action: :change_password, on: :collection
-        patch :avatar, action: :avatar, on: :collection
-        patch :avatar_destroy, action: :avatar_destroy, on: :collection
         collection do
-          get :following, :followers
+          get :following, :followers, :search
+          patch :change_email, :change_password, :avatar, :avatar_destroy
         end
       end
       resources :eventposts, only: %i[index create destroy] do
         get :current_eventpost, action: :show, on: :collection
-        get :user_eventposts, action: :user_eventposts, on: :collection
+        collection do
+          get :user_eventposts, :search
+        end
       end
       delete '/users', to: 'users#destroy'
       resources :login, only: [:create]
