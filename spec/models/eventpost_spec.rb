@@ -206,5 +206,54 @@ RSpec.describe Eventpost, type: :model do
         end
       end
     end
+    # 　user検索のテスト
+
+    describe 'eventposts search' do
+      let(:most_recent) do
+        create(:time_eventpost, :most_recent, user: user, event_name: 'most_recent',
+                                              event_date: Time.current.since(1.week))
+      end
+      let(:middle) do
+        create(:time_eventpost, :middle, user: user, event_name: 'middle', event_date: Time.current.since(2.weeks))
+      end
+      let(:most_old) do
+        create(:time_eventpost, :most_old, user: user, event_name: 'most_old', event_date: Time.current.since(3.weeks))
+      end
+
+      context 'when event_name search' do
+        let(:result) { described_class.ransack(event_name_cont: 'most').result }
+
+        it 'include most_recent' do
+          expect(result).to include most_recent
+        end
+
+        it 'include most_old' do
+          expect(result).to include most_old
+        end
+
+        it 'not include middle' do
+          expect(result).not_to include middle
+        end
+      end
+
+      context 'when event_date search' do
+        let(:result) do
+          described_class.ransack(event_date_gteq: Time.zone.today,
+                                  event_date_lteq_end_of_day: Time.current.since(2.weeks)).result
+        end
+
+        it 'include most_recent' do
+          expect(result).to include most_recent
+        end
+
+        it 'include middle' do
+          expect(result).to include middle
+        end
+
+        it 'not include most_old' do
+          expect(result).not_to include most_old
+        end
+      end
+    end
   end
 end

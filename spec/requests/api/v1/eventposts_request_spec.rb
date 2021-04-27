@@ -118,4 +118,37 @@ RSpec.describe 'Api::V1::Eventposts', type: :request do
       end
     end
   end
+
+  # 　イベント検索のテスト
+
+  describe 'GET /api/v1/eventposts/search' do
+    context 'when search event_name' do
+      let(:user) { create(:user) }
+      let(:eventpost) { create(:eventpost, event_name: 'Myevent') }
+
+      before do
+        logged_in(user)
+        get '/api/v1/eventposts/search', params: { event_name_cont: 'event' }
+      end
+
+      it 'response 200' do
+        expect(response.status).to eq 200
+      end
+    end
+
+    context 'when search user_date' do
+      let(:user) { create(:user) }
+      let(:eventpost) { create(:eventpost, event_date: Time.current.since(1.week)) }
+
+      before do
+        logged_in(user)
+        get '/api/v1/eventposts/search', params: { event_date_gteq: Time.zone.today,
+                                                   event_date_lteq_end_of_day: Time.current.since(2.weeks) }
+      end
+
+      it 'response 200' do
+        expect(response.status).to eq 200
+      end
+    end
+  end
 end

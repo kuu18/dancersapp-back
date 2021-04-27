@@ -142,10 +142,25 @@ class Api::V1::UsersController < ApplicationController
     render json: payload
   end
 
+  def search
+    q = User.ransack(search_params)
+    @users = q.result(distinct: true).page(params[:page]).per(10)
+    pagenation = resources_with_pagination(@users)
+    payload = {
+      users: @users.as_json(methods: 'avatar_url', only: %i[id name user_name email]),
+      kaminari: pagenation
+    }
+    render json: payload
+  end
+
   private
 
   def user_params
     params.require(:user).permit(:name, :user_name, :email, :password)
+  end
+
+  def search_params
+    params.permit(:name_cont, :user_name_cont, :page)
   end
 
   def resources_with_pagination(resources)
