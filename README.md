@@ -1,24 +1,75 @@
-# README
+# DancersApp
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+DancersAppはダンサー向けのアプリケーションです。  
+ダンスイベントの告知をしたりイベントの管理ができます。  
+またユーザーのフォロー機能等様々な機能でダンサー同士が繋がることができるアプリケーションです。
 
-Things you may want to cover:
+フロントエンド　[github](https://github.com/kuu18/dancersapp-front)
+## アプリURL
 
-* Ruby version
+https://dancersapp.site  
+![](https://user-images.githubusercontent.com/64303128/116692045-b6de4100-a9f6-11eb-8940-1b0f375efda5.jpeg)
 
-* System dependencies
+## 作成に至った経緯
+私は大学生の時にダンスサークルに所属していました。  
+そこでは同じ趣味の同じ目標を持った気の合う仲間が簡単に見つかり、
+そのコミュニティの中から良いインストラクターやダンスイベントを紹介してもらっていました。  
+しかし、社会人になってからは当時のダンス仲間とはなかなか予定が合わず、仲良くしていただいていたインストラクターの方のレッスン日程とも合わなくなりダンスから疎遠になっていました。  
+そこで簡単にダンスイベントやダンサー仲間を探すことができ、ダンサー同士がつながり、新しいダンス環境を構築できるようなアプリがあればいいなと思い作成にいたりました。
 
-* Configuration
+## 機能一覧
+**イベントの投稿、管理機能**
+- イベント投稿機能（イベント名、告知内容、画像投稿）
+- イベントに対するいいね機能
+- イベントに対するコメント機能
+- イベント保存機能
+- 保存したイベントを日付順に管理
 
-* Database creation
 
-* Database initialization
+**ユーザー管理機能**
+- ユーザー登録、編集、削除機能
+- ユーザーフォロー機能
+- メール認証機能
+- ログイン、ログアウト機能
+- ゲストログイン機能
+- プロフィール画像の登録
+- パスワードリセット機能
 
-* How to run the test suite
+**検索機能**
+- ユーザー検索機能
+- イベント検索機能
 
-* Services (job queues, cache servers, search engines, etc.)
+**その他の機能**
+- レスポンシブ対応(スマホ表示)
+- ページネーション機能（kaminari）
+- 無限スクロール機能（vue-infinite-loading）
+- 画像投稿時のプレビュー機能
+- HTTPS通信(AWS Certificate Manager)
 
-* Deployment instructions
+## 使用技術
+**バックエンド**
+- Ruby2.7.1
+- Rails6.0.3(rails-api)
 
-* ...
+**フロントエンド**
+- HTML/CSS
+- JavaScript
+- NuxtJS( Vuetify, Vuex, Vuerouter, axios )
+
+**開発環境**
+- Docker/Docker-compose
+- MySQL8.0
+
+**本番環境**
+- AWS( VPC, ECS, Fargate, ECR, Route53, ALB, SSL, S3, IAM )
+- MySQL8.0(RDS)
+
+**テスト、静的コード解析**
+- rspec
+- rubocop
+- ESLint
+
+## こだわったポイント
+フロントエンドはNuxtJS、バックエンドはrails-apiで切り離して完全SPA化しました。  
+フロントエンド　[github](https://github.com/kuu18/dancersapp-front)
+
